@@ -38,7 +38,7 @@ export default function PurchaseRequestsEdit({
 
     const onSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        form.put(purchaseRequestRoutes.update(purchaseRequest.id), {
+        form.put(purchaseRequestRoutes.updateUrl(purchaseRequest.id), {
             preserveScroll: true,
         });
     };
@@ -62,7 +62,9 @@ export default function PurchaseRequestsEdit({
                     errors={form.errors}
                     processing={form.processing}
                     onSubmit={onSubmit}
-                    cancelHref={purchaseRequestRoutes.show(purchaseRequest.id)}
+                    cancelHref={purchaseRequestRoutes.showUrl(
+                        purchaseRequest.id,
+                    )}
                 />
             </div>
         </>

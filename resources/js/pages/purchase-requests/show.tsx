@@ -26,7 +26,7 @@ export default function PurchaseRequestsShow({
     const submitForm = useForm({});
 
     const onSubmit = (): void => {
-        submitForm.post(purchaseRequestRoutes.submit(purchaseRequest.id), {
+        submitForm.post(purchaseRequestRoutes.submitUrl(purchaseRequest.id), {
             preserveScroll: true,
         });
     };

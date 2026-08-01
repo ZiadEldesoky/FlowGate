@@ -1,10 +1,19 @@
 /**
- * Temporary URL builders for the purchase-request intake slice.
- * Root will replace/verify these against generated Wayfinder routes on integration.
- * Keep all path construction here — do not scatter route strings across pages.
+ * Thin frontend accessors over generated Wayfinder helpers.
+ * Generated artifacts live in resources/js/routes (gitignored).
+ * Run: php artisan wayfinder:generate --with-form
  */
-
-type QueryValue = string | number | null | undefined;
+import type { InertiaLinkProps } from '@inertiajs/react';
+import { toUrl } from '@/lib/utils';
+import {
+    create as createRoute,
+    edit as editRoute,
+    index as indexRoute,
+    show as showRoute,
+    store as storeRoute,
+    submit as submitRoute,
+    update as updateRoute,
+} from '@/routes/purchase-requests';
 
 export type PurchaseRequestIndexQuery = {
     search?: string;
@@ -12,39 +21,66 @@ export type PurchaseRequestIndexQuery = {
     page?: number | string | null;
 };
 
-function buildQuery(params: Record<string, QueryValue> = {}): string {
-    const search = new URLSearchParams();
+function compactQuery(
+    query: PurchaseRequestIndexQuery = {},
+): Record<string, string | number> {
+    const params: Record<string, string | number> = {};
 
-    Object.entries(params).forEach(([key, value]) => {
-        if (value === null || value === undefined) {
-            return;
-        }
+    if (query.search && query.search.trim().length > 0) {
+        params.search = query.search.trim();
+    }
 
-        const normalized = String(value).trim();
+    if (query.status && query.status !== 'all') {
+        params.status = query.status;
+    }
 
-        if (normalized.length === 0 || normalized === 'all') {
-            return;
-        }
+    if (
+        query.page !== null &&
+        query.page !== undefined &&
+        String(query.page).length > 0
+    ) {
+        params.page = query.page;
+    }
 
-        search.set(key, normalized);
-    });
+    return params;
+}
 
-    const query = search.toString();
-
-    return query ? `?${query}` : '';
+function asHref(
+    definition: NonNullable<InertiaLinkProps['href']>,
+): NonNullable<InertiaLinkProps['href']> {
+    return definition;
 }
 
 export const purchaseRequestRoutes = {
-    index: (query: PurchaseRequestIndexQuery = {}): string =>
-        `/purchase-requests${buildQuery({
-            search: query.search,
-            status: query.status,
-            page: query.page,
-        })}`,
-    create: (): string => '/purchase-requests/create',
-    store: (): string => '/purchase-requests',
-    show: (id: number | string): string => `/purchase-requests/${id}`,
-    edit: (id: number | string): string => `/purchase-requests/${id}/edit`,
-    update: (id: number | string): string => `/purchase-requests/${id}`,
-    submit: (id: number | string): string => `/purchase-requests/${id}/submit`,
+    index: (query: PurchaseRequestIndexQuery = {}) => {
+        const params = compactQuery(query);
+
+        return asHref(
+            indexRoute(
+                Object.keys(params).length > 0 ? { query: params } : undefined,
+            ),
+        );
+    },
+    indexUrl: (query: PurchaseRequestIndexQuery = {}): string =>
+        toUrl(purchaseRequestRoutes.index(query)),
+    create: () => asHref(createRoute()),
+    createUrl: (): string => toUrl(createRoute()),
+    store: () => asHref(storeRoute()),
+    storeUrl: (): string => toUrl(storeRoute()),
+    show: (purchaseRequestId: number | string) =>
+        asHref(showRoute(purchaseRequestId)),
+    showUrl: (purchaseRequestId: number | string): string =>
+        toUrl(showRoute(purchaseRequestId)),
+    edit: (purchaseRequestId: number | string) =>
+        asHref(editRoute(purchaseRequestId)),
+    editUrl: (purchaseRequestId: number | string): string =>
+        toUrl(editRoute(purchaseRequestId)),
+    update: (purchaseRequestId: number | string) =>
+        asHref(updateRoute(purchaseRequestId)),
+    updateUrl: (purchaseRequestId: number | string): string =>
+        toUrl(updateRoute(purchaseRequestId)),
+    submit: (purchaseRequestId: number | string) =>
+        asHref(submitRoute(purchaseRequestId)),
+    submitUrl: (purchaseRequestId: number | string): string =>
+        toUrl(submitRoute(purchaseRequestId)),
 } as const;

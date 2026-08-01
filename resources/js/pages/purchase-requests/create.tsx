@@ -29,7 +29,7 @@ export default function PurchaseRequestsCreate({
 
     const onSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
         event.preventDefault();
-        form.post(purchaseRequestRoutes.store(), {
+        form.post(purchaseRequestRoutes.storeUrl(), {
             preserveScroll: true,
         });
     };

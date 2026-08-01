@@ -49,7 +49,7 @@ export function PurchaseRequestForm({
     errors,
     processing,
     onSubmit,
-    cancelHref = purchaseRequestRoutes.index(),
+    cancelHref = purchaseRequestRoutes.indexUrl(),
 }: PurchaseRequestFormProps) {
     const estimatedTotal = useMemo(
         () => estimateItemsTotal(data.items),

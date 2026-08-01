@@ -50,7 +50,7 @@ export default function PurchaseRequestsIndex({
             next && 'status' in next ? next.status : selectedStatus;
 
         router.get(
-            purchaseRequestRoutes.index({
+            purchaseRequestRoutes.indexUrl({
                 search: nextSearch,
                 status: !nextStatus || nextStatus === 'all' ? null : nextStatus,
             }),
@@ -66,7 +66,7 @@ export default function PurchaseRequestsIndex({
     const clearFilters = (): void => {
         setSearch('');
         router.get(
-            purchaseRequestRoutes.index(),
+            purchaseRequestRoutes.indexUrl(),
             {},
             {
                 preserveState: true,
