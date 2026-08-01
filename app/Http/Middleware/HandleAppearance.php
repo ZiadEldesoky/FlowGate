@@ -14,11 +14,15 @@ class HandleAppearance
     /**
      * Handle an incoming request.
      *
+     * Presentation-only theme preference shared with the HTML bootstrap.
+     * First-time visitors without a cookie default to light so the OS dark
+     * preference cannot silently darken the initial experience.
+     *
      * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        View::share('appearance', $request->cookie('appearance') ?? 'system');
+        View::share('appearance', $request->cookie('appearance') ?? 'light');
 
         return $next($request);
     }

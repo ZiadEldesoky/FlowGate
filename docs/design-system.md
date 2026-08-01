@@ -34,13 +34,13 @@ resources/js/
 
 ### Placement rules
 
-| Kind | Location |
-| --- | --- |
-| Buttons, inputs, table, dialog, badges | `components/ui` |
-| Sidebar, headers, breadcrumbs, locale switcher | `components/layout` |
+| Kind                                               | Location            |
+| -------------------------------------------------- | ------------------- |
+| Buttons, inputs, table, dialog, badges             | `components/ui`     |
+| Sidebar, headers, breadcrumbs, locale switcher     | `components/layout` |
 | Auth helpers, settings widgets reused across pages | `components/shared` |
-| Domain-specific table/forms for a module | `features/<module>` |
-| Route-facing screens | `pages` |
+| Domain-specific table/forms for a module           | `features/<module>` |
+| Route-facing screens                               | `pages`             |
 
 ## Tokens
 
@@ -58,12 +58,12 @@ Prefer semantic classes (`bg-background`, `text-muted-foreground`, `border-borde
 
 ### Status colors (presentation only)
 
-| Status | Token prefix |
-| --- | --- |
-| draft | `--status-draft*` |
-| pending | `--status-pending*` |
-| approved | `--status-approved*` |
-| rejected | `--status-rejected*` |
+| Status    | Token prefix          |
+| --------- | --------------------- |
+| draft     | `--status-draft*`     |
+| pending   | `--status-pending*`   |
+| approved  | `--status-approved*`  |
+| rejected  | `--status-rejected*`  |
 | completed | `--status-completed*` |
 | cancelled | `--status-cancelled*` |
 
@@ -110,27 +110,27 @@ Do not remove focus styles. Icon-only controls must include an accessible name.
 
 Existing starter primitives are preserved and extended. Prefer these instead of long Tailwind strings in pages.
 
-| Primitive | Path | Notes |
-| --- | --- | --- |
-| Button | `components/ui/button` | default / outline / secondary / ghost / destructive / link |
-| IconButton | `components/ui/icon-button` | requires `label` for accessibility |
-| Input | `components/ui/input` | disabled / invalid / focus states |
-| Textarea | `components/ui/textarea` | same state treatment as input |
-| Select | `components/ui/select` | Radix select |
-| Checkbox | `components/ui/checkbox` | |
-| Dialog | `components/ui/dialog` | |
-| DropdownMenu | `components/ui/dropdown-menu` | |
-| Badge | `components/ui/badge` | generic badge |
-| StatusBadge | `components/ui/status-badge` | maps presentation statuses only |
-| Table | `components/ui/table` | scannable dense table |
-| Pagination | `components/ui/pagination` | RTL-aware chevrons |
-| FormField | `components/ui/form-field` | label + description + ARIA error wiring |
-| Alert | `components/ui/alert` | default / destructive / success / warning / info |
-| EmptyState | `components/ui/empty-state` | dashed empty region |
-| Skeleton | `components/ui/skeleton` | loading placeholders |
-| Toast | `components/ui/sonner` | flash + imperative toasts |
-| PageHeader | `components/ui/page-header` | title, description, actions, meta |
-| FilterBar | `components/ui/filter-bar` | filter fields + action slot |
+| Primitive    | Path                          | Notes                                                      |
+| ------------ | ----------------------------- | ---------------------------------------------------------- |
+| Button       | `components/ui/button`        | default / outline / secondary / ghost / destructive / link |
+| IconButton   | `components/ui/icon-button`   | requires `label` for accessibility                         |
+| Input        | `components/ui/input`         | disabled / invalid / focus states                          |
+| Textarea     | `components/ui/textarea`      | same state treatment as input                              |
+| Select       | `components/ui/select`        | Radix select                                               |
+| Checkbox     | `components/ui/checkbox`      |                                                            |
+| Dialog       | `components/ui/dialog`        |                                                            |
+| DropdownMenu | `components/ui/dropdown-menu` |                                                            |
+| Badge        | `components/ui/badge`         | generic badge                                              |
+| StatusBadge  | `components/ui/status-badge`  | maps presentation statuses only                            |
+| Table        | `components/ui/table`         | scannable dense table                                      |
+| Pagination   | `components/ui/pagination`    | RTL-aware chevrons                                         |
+| FormField    | `components/ui/form-field`    | label + description + ARIA error wiring                    |
+| Alert        | `components/ui/alert`         | default / destructive / success / warning / info           |
+| EmptyState   | `components/ui/empty-state`   | dashed empty region                                        |
+| Skeleton     | `components/ui/skeleton`      | loading placeholders                                       |
+| Toast        | `components/ui/sonner`        | flash + imperative toasts                                  |
+| PageHeader   | `components/ui/page-header`   | title, description, actions, meta                          |
+| FilterBar    | `components/ui/filter-bar`    | filter fields + action slot                                |
 
 ### Composition pattern
 
@@ -161,8 +161,15 @@ Rules:
 ```tsx
 import { StatusBadge } from '@/components/ui/status-badge';
 
-<StatusBadge status="pending" locale="ar" />
+<StatusBadge status="pending" locale="ar" />;
 ```
+
+## Appearance defaults
+
+- First-time visitors default to **light**
+- Explicit `light` / `dark` / `system` choices are preserved once selected
+- HTML bootstrap (`app.blade.php` + `HandleAppearance`) and React (`initializeTheme`) use the same rule
+- `system` follows the OS only after the user chooses it deliberately
 
 ## RTL / LTR
 
