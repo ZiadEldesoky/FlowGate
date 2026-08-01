@@ -1,3 +1,4 @@
+import type { AppLocale } from '@/types/locale';
 import type { PurchaseRequestFormItem } from '@/types/purchase-request';
 
 export const MAX_PURCHASE_REQUEST_ITEMS = 25;
@@ -32,6 +33,81 @@ export function parseDecimal(value: string | null | undefined): number {
     return Number.isFinite(parsed) ? parsed : 0;
 }
 
+const intlLocale = (locale: AppLocale): string =>
+    locale === 'ar' ? 'ar-EG' : 'en-EG';
+
+export function formatMoney(
+    amount: string,
+    currency: string,
+    locale: AppLocale,
+): string {
+    const normalized = amount.replaceAll(',', '').trim();
+    const parsed = Number(normalized);
+
+    if (!Number.isFinite(parsed)) {
+        return `${currency} ${amount}`;
+    }
+
+    try {
+        return new Intl.NumberFormat(intlLocale(locale), {
+            style: 'currency',
+            currency,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(parsed);
+    } catch {
+        return `${currency} ${amount}`;
+    }
+}
+
+function dateValue(value: string): Date | null {
+    const normalized = /^\d{4}-\d{2}-\d{2}$/.test(value)
+        ? `${value}T00:00:00`
+        : value;
+    const date = new Date(normalized);
+
+    return Number.isNaN(date.getTime()) ? null : date;
+}
+
+export function formatDate(
+    value: string | null | undefined,
+    locale: AppLocale,
+): string | null {
+    if (!value) {
+        return null;
+    }
+
+    const date = dateValue(value);
+
+    if (!date) {
+        return value;
+    }
+
+    return new Intl.DateTimeFormat(intlLocale(locale), {
+        dateStyle: 'medium',
+    }).format(date);
+}
+
+export function formatDateTime(
+    value: string | null | undefined,
+    locale: AppLocale,
+): string | null {
+    if (!value) {
+        return null;
+    }
+
+    const date = dateValue(value);
+
+    if (!date) {
+        return value;
+    }
+
+    return new Intl.DateTimeFormat(intlLocale(locale), {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+    }).format(date);
+}
+
 /**
  * Preview-only client estimate. Never submit this as the authoritative total.
  */
@@ -49,7 +125,7 @@ export function formatEstimate(
     locale: 'ar' | 'en',
 ): string {
     try {
-        return new Intl.NumberFormat(locale === 'ar' ? 'ar-EG' : 'en-EG', {
+        return new Intl.NumberFormat(intlLocale(locale), {
             style: 'currency',
             currency,
             minimumFractionDigits: 2,

@@ -82,6 +82,10 @@ export type PurchaseRequestFormPayload = {
     items: PurchaseRequestFormItem[];
 };
 
+export type PurchaseRequestFormErrorKey =
+    | keyof PurchaseRequestFormPayload
+    | `items.${number}.${keyof PurchaseRequestFormItem}`;
+
 export type PurchaseRequestCreateProps = {
     department: PurchaseRequestDepartment;
     defaults: {

@@ -1,6 +1,17 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Pencil, Send } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import { PageHeader } from '@/components/ui/page-header';
 import { Spinner } from '@/components/ui/spinner';
 import {
@@ -22,12 +33,14 @@ export default function PurchaseRequestsShow({
     const { locale } = useDirection();
     const t = getPurchaseRequestCopy(locale);
     const canSubmit = allowedActions.includes('submit');
+    const [submitDialogOpen, setSubmitDialogOpen] = useState(false);
 
     const submitForm = useForm({});
 
     const onSubmit = (): void => {
         submitForm.post(purchaseRequestRoutes.submitUrl(purchaseRequest.id), {
             preserveScroll: true,
+            onSuccess: () => setSubmitDialogOpen(false),
         });
     };
 
@@ -60,21 +73,54 @@ export default function PurchaseRequestsShow({
                                 </Button>
                             ) : null}
                             {canSubmit ? (
-                                <Button
-                                    type="button"
-                                    size="sm"
-                                    onClick={onSubmit}
-                                    disabled={submitForm.processing}
+                                <Dialog
+                                    open={submitDialogOpen}
+                                    onOpenChange={setSubmitDialogOpen}
                                 >
-                                    {submitForm.processing ? (
-                                        <Spinner />
-                                    ) : (
-                                        <Send className="size-4" />
-                                    )}
-                                    {submitForm.processing
-                                        ? t.processing
-                                        : t.submit}
-                                </Button>
+                                    <DialogTrigger asChild>
+                                        <Button type="button" size="sm">
+                                            <Send className="size-4" />
+                                            {t.submit}
+                                        </Button>
+                                    </DialogTrigger>
+                                    <DialogContent>
+                                        <DialogHeader>
+                                            <DialogTitle>
+                                                {t.confirmSubmitTitle}
+                                            </DialogTitle>
+                                            <DialogDescription>
+                                                {t.confirmSubmitDescription}
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <DialogFooter>
+                                            <DialogClose asChild>
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    disabled={
+                                                        submitForm.processing
+                                                    }
+                                                >
+                                                    {t.cancel}
+                                                </Button>
+                                            </DialogClose>
+                                            <Button
+                                                type="button"
+                                                onClick={onSubmit}
+                                                disabled={submitForm.processing}
+                                            >
+                                                {submitForm.processing ? (
+                                                    <Spinner />
+                                                ) : (
+                                                    <Send className="size-4" />
+                                                )}
+                                                {submitForm.processing
+                                                    ? t.processing
+                                                    : t.confirmSubmitAction}
+                                            </Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
                             ) : null}
                         </>
                     }
@@ -87,10 +133,12 @@ export default function PurchaseRequestsShow({
                 />
                 <RequestItemsSection
                     purchaseRequest={purchaseRequest}
+                    locale={locale}
                     labels={t}
                 />
                 <RequestApprovalsSection
                     purchaseRequest={purchaseRequest}
+                    locale={locale}
                     labels={t}
                 />
                 <RequestActivitySection

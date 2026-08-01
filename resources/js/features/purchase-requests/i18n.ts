@@ -46,6 +46,10 @@ export const purchaseRequestCopy = {
         updateDraft: 'تحديث المسودة',
         cancel: 'إلغاء',
         submit: 'إرسال للمراجعة',
+        confirmSubmitTitle: 'إرسال طلب الشراء؟',
+        confirmSubmitDescription:
+            'سينتقل الطلب إلى مراجعة المدير ولن يعود متاحًا للتعديل بعد الإرسال.',
+        confirmSubmitAction: 'تأكيد الإرسال',
         edit: 'تعديل',
         backToList: 'العودة للقائمة',
         processing: 'جارٍ المعالجة…',
@@ -70,7 +74,8 @@ export const purchaseRequestCopy = {
         itemCount: 'عدد البنود',
         minItems: 'بند واحد على الأقل مطلوب.',
         maxItems: 'الحد الأقصى 25 بندًا.',
-        validationSummary: 'يرجى مراجعة الحقول المحددة.',
+        validationTitle: 'تعذّر حفظ المسودة',
+        validationSummary: 'يرجى مراجعة الحقول المحددة والمحاولة مرة أخرى.',
         notAvailable: '—',
     },
     en: {
@@ -119,6 +124,10 @@ export const purchaseRequestCopy = {
         updateDraft: 'Update draft',
         cancel: 'Cancel',
         submit: 'Submit for review',
+        confirmSubmitTitle: 'Submit this purchase request?',
+        confirmSubmitDescription:
+            'The request will move to manager review and can no longer be edited after submission.',
+        confirmSubmitAction: 'Confirm submission',
         edit: 'Edit',
         backToList: 'Back to list',
         processing: 'Processing…',
@@ -143,7 +152,9 @@ export const purchaseRequestCopy = {
         itemCount: 'Items',
         minItems: 'At least one item is required.',
         maxItems: 'A maximum of 25 items is allowed.',
-        validationSummary: 'Please review the highlighted fields.',
+        validationTitle: 'Draft could not be saved',
+        validationSummary:
+            'Please review the highlighted fields and try again.',
         notAvailable: '—',
     },
 } as const;
@@ -164,4 +175,86 @@ export function formatCopy(
             value == null ? '—' : String(value),
         );
     }, template);
+}
+
+const stageLabels: Readonly<
+    Record<string, Readonly<Record<AppLocale, string>>>
+> = {
+    manager_review: {
+        ar: 'مراجعة المدير',
+        en: 'Manager review',
+    },
+    procurement_review: {
+        ar: 'مراجعة المشتريات',
+        en: 'Procurement review',
+    },
+};
+
+const decisionLabels: Readonly<
+    Record<string, Readonly<Record<AppLocale, string>>>
+> = {
+    approved: {
+        ar: 'موافقة',
+        en: 'Approved',
+    },
+    rejected: {
+        ar: 'رفض',
+        en: 'Rejected',
+    },
+};
+
+const actionLabels: Readonly<
+    Record<string, Readonly<Record<AppLocale, string>>>
+> = {
+    submit: {
+        ar: 'إرسال للمراجعة',
+        en: 'Submitted for review',
+    },
+    approve_manager_review: {
+        ar: 'موافقة المدير',
+        en: 'Manager approved',
+    },
+    approve_procurement_review: {
+        ar: 'موافقة المشتريات',
+        en: 'Procurement approved',
+    },
+    reject: {
+        ar: 'رفض الطلب',
+        en: 'Request rejected',
+    },
+    complete: {
+        ar: 'إكمال الطلب',
+        en: 'Request completed',
+    },
+    cancel: {
+        ar: 'إلغاء الطلب',
+        en: 'Request cancelled',
+    },
+};
+
+const lookupLabel = (
+    labels: Readonly<Record<string, Readonly<Record<AppLocale, string>>>>,
+    value: string,
+    locale: AppLocale,
+): string => labels[value]?.[locale] ?? value.replaceAll('_', ' ');
+
+export function getPurchaseRequestStageLabel(
+    stage: string,
+    locale: AppLocale,
+): string {
+    return lookupLabel(stageLabels, stage, locale);
+}
+
+export function getPurchaseRequestDecisionLabel(
+    decision: string,
+    locale: AppLocale,
+): string {
+    return lookupLabel(decisionLabels, decision, locale);
+}
+
+export function getPurchaseRequestActionLabel(
+    action: string,
+    locale: AppLocale,
+): string {
+    return lookupLabel(actionLabels, action, locale);
 }

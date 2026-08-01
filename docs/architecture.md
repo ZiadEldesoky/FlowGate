@@ -159,6 +159,11 @@ one to twenty-five item rows. `CreatePurchaseRequest` and
 The React form may display an estimate, but it never submits or persists a
 trusted total.
 
+The locale preference crosses the HTTP boundary through a non-sensitive
+`locale` cookie. `HandleLocale` selects only `ar` or `en` before validation and
+response rendering, so translated validation errors and flash feedback match the
+same locale used by the React direction hook.
+
 `PurchaseRequestsIndexQuery` owns search, status filtering, pagination, eager
 loading, and role-aware visibility. Requesters see their own requests, managers
 see their department, and procurement or administrator roles see the full

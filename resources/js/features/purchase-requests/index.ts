@@ -1,7 +1,10 @@
 export { purchaseRequestRoutes } from './routes';
 export {
     formatCopy,
+    getPurchaseRequestActionLabel,
     getPurchaseRequestCopy,
+    getPurchaseRequestDecisionLabel,
+    getPurchaseRequestStageLabel,
     purchaseRequestCopy,
 } from './i18n';
 export {
@@ -9,7 +12,10 @@ export {
     MIN_PURCHASE_REQUEST_ITEMS,
     createEmptyItem,
     estimateItemsTotal,
+    formatDate,
+    formatDateTime,
     formatEstimate,
+    formatMoney,
     nestedError,
     parseDecimal,
     toDateInputValue,

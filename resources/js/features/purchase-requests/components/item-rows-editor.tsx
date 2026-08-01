@@ -9,14 +9,17 @@ import {
     MIN_PURCHASE_REQUEST_ITEMS,
     nestedError,
 } from '@/features/purchase-requests/utils';
-import { cn } from '@/lib/utils';
-import type { PurchaseRequestFormItem } from '@/types/purchase-request';
+import type {
+    PurchaseRequestFormErrorKey,
+    PurchaseRequestFormItem,
+} from '@/types/purchase-request';
 
 type ItemRowsEditorProps = {
     items: PurchaseRequestFormItem[];
     labels: PurchaseRequestCopy;
     errors: Partial<Record<string, string>>;
     onChange: (items: PurchaseRequestFormItem[]) => void;
+    onClearError: (field: PurchaseRequestFormErrorKey) => void;
     disabled?: boolean;
 };
 
@@ -25,6 +28,7 @@ export function ItemRowsEditor({
     labels,
     errors,
     onChange,
+    onClearError,
     disabled = false,
 }: ItemRowsEditorProps) {
     const canAdd = items.length < MAX_PURCHASE_REQUEST_ITEMS;
@@ -32,6 +36,7 @@ export function ItemRowsEditor({
 
     const updateItem = (
         index: number,
+        field: keyof PurchaseRequestFormItem,
         patch: Partial<PurchaseRequestFormItem>,
     ): void => {
         onChange(
@@ -39,6 +44,7 @@ export function ItemRowsEditor({
                 itemIndex === index ? { ...item, ...patch } : item,
             ),
         );
+        onClearError(`items.${index}.${field}`);
     };
 
     const removeItem = (index: number): void => {
@@ -47,6 +53,7 @@ export function ItemRowsEditor({
         }
 
         onChange(items.filter((_, itemIndex) => itemIndex !== index));
+        onClearError('items');
     };
 
     const addItem = (): void => {
@@ -63,6 +70,7 @@ export function ItemRowsEditor({
                 unit_price: '0',
             },
         ]);
+        onClearError('items');
     };
 
     return (
@@ -117,15 +125,21 @@ export function ItemRowsEditor({
                                     id={`items-${index}-description`}
                                     value={item.description}
                                     onChange={(event) =>
-                                        updateItem(index, {
+                                        updateItem(index, 'description', {
                                             description: event.target.value,
                                         })
                                     }
                                     disabled={disabled}
                                     aria-invalid={Boolean(descriptionError)}
+                                    aria-describedby={
+                                        descriptionError
+                                            ? `items-${index}-description-error`
+                                            : undefined
+                                    }
                                 />
                                 {descriptionError ? (
                                     <p
+                                        id={`items-${index}-description-error`}
                                         role="alert"
                                         className="text-sm text-destructive"
                                     >
@@ -142,7 +156,7 @@ export function ItemRowsEditor({
                                     id={`items-${index}-sku`}
                                     value={item.sku ?? ''}
                                     onChange={(event) =>
-                                        updateItem(index, {
+                                        updateItem(index, 'sku', {
                                             sku:
                                                 event.target.value.trim()
                                                     .length > 0
@@ -152,9 +166,15 @@ export function ItemRowsEditor({
                                     }
                                     disabled={disabled}
                                     aria-invalid={Boolean(skuError)}
+                                    aria-describedby={
+                                        skuError
+                                            ? `items-${index}-sku-error`
+                                            : undefined
+                                    }
                                 />
                                 {skuError ? (
                                     <p
+                                        id={`items-${index}-sku-error`}
                                         role="alert"
                                         className="text-sm text-destructive"
                                     >
@@ -172,16 +192,22 @@ export function ItemRowsEditor({
                                     inputMode="decimal"
                                     value={item.quantity}
                                     onChange={(event) =>
-                                        updateItem(index, {
+                                        updateItem(index, 'quantity', {
                                             quantity: event.target.value,
                                         })
                                     }
                                     disabled={disabled}
                                     aria-invalid={Boolean(quantityError)}
+                                    aria-describedby={
+                                        quantityError
+                                            ? `items-${index}-quantity-error`
+                                            : undefined
+                                    }
                                     className="font-mono tabular-nums"
                                 />
                                 {quantityError ? (
                                     <p
+                                        id={`items-${index}-quantity-error`}
                                         role="alert"
                                         className="text-sm text-destructive"
                                     >
@@ -199,16 +225,22 @@ export function ItemRowsEditor({
                                     inputMode="decimal"
                                     value={item.unit_price}
                                     onChange={(event) =>
-                                        updateItem(index, {
+                                        updateItem(index, 'unit_price', {
                                             unit_price: event.target.value,
                                         })
                                     }
                                     disabled={disabled}
                                     aria-invalid={Boolean(unitPriceError)}
+                                    aria-describedby={
+                                        unitPriceError
+                                            ? `items-${index}-unit-price-error`
+                                            : undefined
+                                    }
                                     className="font-mono tabular-nums"
                                 />
                                 {unitPriceError ? (
                                     <p
+                                        id={`items-${index}-unit-price-error`}
                                         role="alert"
                                         className="text-sm text-destructive"
                                     >
@@ -217,11 +249,7 @@ export function ItemRowsEditor({
                                 ) : null}
                             </div>
 
-                            <div
-                                className={cn(
-                                    'flex items-end justify-end pb-0.5',
-                                )}
-                            >
+                            <div className="flex items-end justify-end pb-0.5">
                                 <IconButton
                                     type="button"
                                     label={labels.removeItem}

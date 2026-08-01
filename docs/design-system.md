@@ -186,6 +186,9 @@ Reusable control: `components/shared/appearance-switcher.tsx`
 - Locale/direction is managed by `hooks/use-direction.tsx`
 - `initializeDirection('ar')` runs from `app.tsx`
 - `LocaleSwitcher` in the app header toggles `ar` / `en`
+- The preference is stored in local storage and mirrored to the `locale` cookie
+- `HandleLocale` applies the same locale before Blade, validation, and translated
+  flash messages render, preventing client/server language drift
 - Prefer logical CSS utilities: `ms-*`, `me-*`, `ps-*`, `pe-*`, `text-start`, `text-end`, `start-*`, `end-*`
 - Chevron icons that imply direction should use `rtl:rotate-180` when needed
 - The application sidebar moves to the right in RTL and back to the left in LTR
@@ -202,19 +205,20 @@ Do not hard-code left/right layout for operational chrome unless a physical dire
 - Contrast comes from semantic token pairs; avoid low-contrast gray-on-gray text for primary content
 - Tables keep header cells as `th` and maintain a clear reading order in both directions
 
-## Authenticated preview
+## Procurement intake screens
 
-`pages/dashboard.tsx` is a presentation-only shell that demonstrates:
+The real server-backed vertical slice lives under
+`pages/purchase-requests/{index,create,edit,show}.tsx` and composes feature
+components from `features/purchase-requests`.
 
-- App sidebar and header
-- Page header + filter bar
-- Status legend and badges
-- Scannable table
-- Loading / empty / error affordances
-- Arabic/English direction switching
-- Preview total as a preformatted display string
-
-Preview data lives in `features/purchase-requests/preview-data.ts` and is clearly labeled as UI demo data. React must not become the source of truth for monetary totals or workflow state.
+- Index filters and pagination request server-owned query results
+- Create and edit forms submit normalized item inputs, never a trusted total
+- The client total is explicitly labeled as a preview
+- The details page renders persisted totals, audit history, and `allowedActions`
+- Submitting a draft requires a confirmation dialog because editing is no longer
+  available after the transition
+- Dates, money, workflow statuses, activities, and validation feedback use the
+  active locale
 
 ## Usage guidance
 

@@ -1,6 +1,5 @@
 import { Link } from '@inertiajs/react';
 import { useMemo } from 'react';
-import InputError from '@/components/shared/input-error';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { FormField } from '@/components/ui/form-field';
@@ -18,6 +17,7 @@ import {
 import type { AppLocale } from '@/types/locale';
 import type {
     PurchaseRequestDepartment,
+    PurchaseRequestFormErrorKey,
     PurchaseRequestFormPayload,
 } from '@/types/purchase-request';
 
@@ -33,6 +33,7 @@ type PurchaseRequestFormProps = {
             value: PurchaseRequestFormPayload[K],
         ): void;
     };
+    clearError: (field: PurchaseRequestFormErrorKey) => void;
     errors: Partial<Record<string, string>>;
     processing: boolean;
     onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -46,6 +47,7 @@ export function PurchaseRequestForm({
     department,
     data,
     setData,
+    clearError,
     errors,
     processing,
     onSubmit,
@@ -66,7 +68,7 @@ export function PurchaseRequestForm({
         <form onSubmit={onSubmit} className="space-y-6" noValidate>
             {hasErrors ? (
                 <Alert variant="destructive">
-                    <AlertTitle>{labels.validationSummary}</AlertTitle>
+                    <AlertTitle>{labels.validationTitle}</AlertTitle>
                     <AlertDescription>
                         {labels.validationSummary}
                     </AlertDescription>
@@ -83,9 +85,10 @@ export function PurchaseRequestForm({
                 >
                     <Input
                         value={data.title}
-                        onChange={(event) =>
-                            setData('title', event.target.value)
-                        }
+                        onChange={(event) => {
+                            setData('title', event.target.value);
+                            clearError('title');
+                        }}
                         disabled={processing}
                         autoComplete="off"
                     />
@@ -100,9 +103,10 @@ export function PurchaseRequestForm({
                 >
                     <Textarea
                         value={data.justification}
-                        onChange={(event) =>
-                            setData('justification', event.target.value)
-                        }
+                        onChange={(event) => {
+                            setData('justification', event.target.value);
+                            clearError('justification');
+                        }}
                         disabled={processing}
                         rows={4}
                     />
@@ -116,14 +120,15 @@ export function PurchaseRequestForm({
                     <Input
                         type="date"
                         value={toDateInputValue(data.needed_by)}
-                        onChange={(event) =>
+                        onChange={(event) => {
                             setData(
                                 'needed_by',
                                 event.target.value.length > 0
                                     ? event.target.value
                                     : null,
-                            )
-                        }
+                            );
+                            clearError('needed_by');
+                        }}
                         disabled={processing}
                     />
                 </FormField>
@@ -154,8 +159,8 @@ export function PurchaseRequestForm({
                     errors={errors}
                     disabled={processing}
                     onChange={(items) => setData('items', items)}
+                    onClearError={clearError}
                 />
-                <InputError message={errors.items} className="mt-2" />
             </section>
 
             <section className="rounded-md border border-dashed bg-muted/20 p-4">

@@ -10,6 +10,10 @@ import {
 } from '@/components/ui/table';
 import type { PurchaseRequestCopy } from '@/features/purchase-requests/i18n';
 import { purchaseRequestRoutes } from '@/features/purchase-requests/routes';
+import {
+    formatDateTime,
+    formatMoney,
+} from '@/features/purchase-requests/utils';
 import type { AppLocale } from '@/types/locale';
 import type { PurchaseRequestListItem } from '@/types/purchase-request';
 
@@ -69,10 +73,11 @@ export function PurchaseRequestTable({
                             <StatusBadge status={row.status} locale={locale} />
                         </TableCell>
                         <TableCell className="text-end font-mono text-xs tabular-nums">
-                            {row.currency} {row.totalAmount}
+                            {formatMoney(row.totalAmount, row.currency, locale)}
                         </TableCell>
                         <TableCell className="text-muted-foreground">
-                            {row.submittedAt ?? labels.notAvailable}
+                            {formatDateTime(row.submittedAt, locale) ??
+                                labels.notAvailable}
                         </TableCell>
                     </TableRow>
                 ))}

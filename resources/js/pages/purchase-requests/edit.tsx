@@ -59,6 +59,7 @@ export default function PurchaseRequestsEdit({
                     labels={t}
                     data={form.data}
                     setData={form.setData}
+                    clearError={(field) => form.clearErrors(field)}
                     errors={form.errors}
                     processing={form.processing}
                     onSubmit={onSubmit}

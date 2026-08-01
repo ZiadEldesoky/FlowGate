@@ -8,6 +8,16 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import type { PurchaseRequestCopy } from '@/features/purchase-requests/i18n';
+import {
+    getPurchaseRequestActionLabel,
+    getPurchaseRequestDecisionLabel,
+    getPurchaseRequestStageLabel,
+} from '@/features/purchase-requests/i18n';
+import {
+    formatDate,
+    formatDateTime,
+    formatMoney,
+} from '@/features/purchase-requests/utils';
 import { getPresentationStatusLabel } from '@/lib/status';
 import type { AppLocale } from '@/types/locale';
 import type { PurchaseRequestDetail } from '@/types/purchase-request';
@@ -46,7 +56,11 @@ export function RequestSummarySection({
                     {labels.serverTotal}
                 </p>
                 <p className="font-mono text-sm font-semibold tabular-nums">
-                    {purchaseRequest.currency} {purchaseRequest.totalAmount}
+                    {formatMoney(
+                        purchaseRequest.totalAmount,
+                        purchaseRequest.currency,
+                        locale,
+                    )}
                 </p>
             </div>
             <div className="space-y-1">
@@ -71,7 +85,10 @@ export function RequestSummarySection({
                 <p className="text-xs font-medium text-muted-foreground">
                     {labels.neededBy}
                 </p>
-                <p>{purchaseRequest.neededBy ?? labels.notAvailable}</p>
+                <p>
+                    {formatDate(purchaseRequest.neededBy, locale) ??
+                        labels.notAvailable}
+                </p>
             </div>
             <div className="space-y-1 sm:col-span-2 lg:col-span-3">
                 <p className="text-xs font-medium text-muted-foreground">
@@ -86,7 +103,8 @@ export function RequestSummarySection({
                     {labels.createdAt}
                 </p>
                 <p className="text-sm">
-                    {purchaseRequest.createdAt ?? labels.notAvailable}
+                    {formatDateTime(purchaseRequest.createdAt, locale) ??
+                        labels.notAvailable}
                 </p>
             </div>
             <div className="space-y-1">
@@ -94,7 +112,8 @@ export function RequestSummarySection({
                     {labels.submittedAt}
                 </p>
                 <p className="text-sm">
-                    {purchaseRequest.submittedAt ?? labels.notAvailable}
+                    {formatDateTime(purchaseRequest.submittedAt, locale) ??
+                        labels.notAvailable}
                 </p>
             </div>
         </section>
@@ -103,8 +122,9 @@ export function RequestSummarySection({
 
 export function RequestItemsSection({
     purchaseRequest,
+    locale,
     labels,
-}: Omit<RequestDetailSectionsProps, 'locale'>) {
+}: RequestDetailSectionsProps) {
     return (
         <section className="overflow-hidden rounded-md border bg-card">
             <div className="border-b px-4 py-3">
@@ -143,10 +163,18 @@ export function RequestItemsSection({
                                 {item.quantity}
                             </TableCell>
                             <TableCell className="text-end font-mono text-xs tabular-nums">
-                                {purchaseRequest.currency} {item.unitPrice}
+                                {formatMoney(
+                                    item.unitPrice,
+                                    purchaseRequest.currency,
+                                    locale,
+                                )}
                             </TableCell>
                             <TableCell className="text-end font-mono text-xs tabular-nums">
-                                {purchaseRequest.currency} {item.lineTotal}
+                                {formatMoney(
+                                    item.lineTotal,
+                                    purchaseRequest.currency,
+                                    locale,
+                                )}
                             </TableCell>
                         </TableRow>
                     ))}
@@ -157,7 +185,11 @@ export function RequestItemsSection({
                     {labels.serverTotal}
                 </span>
                 <span className="font-mono font-semibold tabular-nums">
-                    {purchaseRequest.currency} {purchaseRequest.totalAmount}
+                    {formatMoney(
+                        purchaseRequest.totalAmount,
+                        purchaseRequest.currency,
+                        locale,
+                    )}
                 </span>
             </div>
         </section>
@@ -166,8 +198,9 @@ export function RequestItemsSection({
 
 export function RequestApprovalsSection({
     purchaseRequest,
+    locale,
     labels,
-}: Omit<RequestDetailSectionsProps, 'locale'>) {
+}: RequestDetailSectionsProps) {
     return (
         <section className="overflow-hidden rounded-md border bg-card">
             <div className="border-b px-4 py-3">
@@ -191,14 +224,24 @@ export function RequestApprovalsSection({
                     <TableBody>
                         {purchaseRequest.approvals.map((approval) => (
                             <TableRow key={approval.id}>
-                                <TableCell>{approval.stage}</TableCell>
-                                <TableCell>{approval.decision}</TableCell>
+                                <TableCell>
+                                    {getPurchaseRequestStageLabel(
+                                        approval.stage,
+                                        locale,
+                                    )}
+                                </TableCell>
+                                <TableCell>
+                                    {getPurchaseRequestDecisionLabel(
+                                        approval.decision,
+                                        locale,
+                                    )}
+                                </TableCell>
                                 <TableCell>{approval.actor.name}</TableCell>
                                 <TableCell className="max-w-[16rem] whitespace-normal">
                                     {approval.comment ?? labels.notAvailable}
                                 </TableCell>
                                 <TableCell className="text-muted-foreground">
-                                    {approval.decidedAt}
+                                    {formatDateTime(approval.decidedAt, locale)}
                                 </TableCell>
                             </TableRow>
                         ))}
@@ -237,7 +280,12 @@ export function RequestActivitySection({
                     <TableBody>
                         {purchaseRequest.activity.map((entry) => (
                             <TableRow key={entry.id}>
-                                <TableCell>{entry.action}</TableCell>
+                                <TableCell>
+                                    {getPurchaseRequestActionLabel(
+                                        entry.action,
+                                        locale,
+                                    )}
+                                </TableCell>
                                 <TableCell>
                                     {entry.fromStatus
                                         ? getPresentationStatusLabel(
@@ -256,7 +304,7 @@ export function RequestActivitySection({
                                     {entry.actor?.name ?? labels.notAvailable}
                                 </TableCell>
                                 <TableCell className="text-muted-foreground">
-                                    {entry.createdAt}
+                                    {formatDateTime(entry.createdAt, locale)}
                                 </TableCell>
                             </TableRow>
                         ))}

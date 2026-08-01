@@ -56,6 +56,56 @@ final class SavePurchaseRequestRequest extends FormRequest
     }
 
     /**
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        $attributes = app()->isLocale('ar')
+            ? [
+                'title' => 'العنوان',
+                'justification' => 'المبرر',
+                'needed_by' => 'تاريخ الاحتياج',
+                'currency' => 'العملة',
+                'items' => 'البنود',
+            ]
+            : [
+                'title' => 'title',
+                'justification' => 'justification',
+                'needed_by' => 'needed-by date',
+                'currency' => 'currency',
+                'items' => 'items',
+            ];
+
+        $items = $this->input('items');
+
+        if (! is_array($items)) {
+            return $attributes;
+        }
+
+        foreach (array_keys($items) as $index) {
+            $position = is_numeric($index) ? ((int) $index) + 1 : $index;
+            $prefix = app()->isLocale('ar')
+                ? "البند رقم {$position}"
+                : "item {$position}";
+
+            $attributes["items.{$index}.description"] = app()->isLocale('ar')
+                ? "وصف {$prefix}"
+                : "{$prefix} description";
+            $attributes["items.{$index}.sku"] = app()->isLocale('ar')
+                ? "رمز {$prefix}"
+                : "{$prefix} SKU";
+            $attributes["items.{$index}.quantity"] = app()->isLocale('ar')
+                ? "كمية {$prefix}"
+                : "{$prefix} quantity";
+            $attributes["items.{$index}.unit_price"] = app()->isLocale('ar')
+                ? "سعر وحدة {$prefix}"
+                : "{$prefix} unit price";
+        }
+
+        return $attributes;
+    }
+
+    /**
      * @return array{
      *     title: string,
      *     justification: string,

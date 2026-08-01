@@ -108,6 +108,26 @@ it('validates nested items before creating a request', function (): void {
     expect(PurchaseRequest::query()->count())->toBe(0);
 });
 
+it('localizes purchase request validation from the locale cookie', function (): void {
+    $department = Department::factory()->create();
+    $requester = User::factory()->create([
+        'department_id' => $department->id,
+        'role' => UserRole::Requester,
+    ]);
+    $payload = validPurchaseRequestPayload();
+    $payload['title'] = '';
+    $payload['items'][0]['description'] = '';
+
+    $this
+        ->withCookie('locale', 'ar')
+        ->actingAs($requester)
+        ->post(route('purchase-requests.store'), $payload)
+        ->assertSessionHasErrors([
+            'title' => 'حقل العنوان مطلوب.',
+            'items.0.description' => 'حقل وصف البند رقم 1 مطلوب.',
+        ]);
+});
+
 it('forbids creating a request without a department', function (): void {
     $requester = User::factory()->create([
         'department_id' => null,
@@ -243,7 +263,7 @@ it('renders details from the server with allowed actions', function (): void {
         ]))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page): AssertableInertia => $page
-            ->component('purchase-requests/show', false)
+            ->component('purchase-requests/show')
             ->where('purchaseRequest.id', $purchaseRequest->id)
             ->where('purchaseRequest.items.0.lineTotal', '9.00')
             ->where('allowedActions', ['submit', 'cancel'])
@@ -290,7 +310,7 @@ it('scopes the request index and applies server filters', function (): void {
         ]))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page): AssertableInertia => $page
-            ->component('purchase-requests/index', false)
+            ->component('purchase-requests/index')
             ->has('purchaseRequests.data', 1)
             ->where(
                 'purchaseRequests.data.0.title',
