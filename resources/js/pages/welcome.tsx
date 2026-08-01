@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import AppLogoIcon from '@/components/layout/app-logo-icon';
 import { LocaleSwitcher } from '@/components/layout/locale-switcher';
+import { AppearanceSwitcher } from '@/components/shared/appearance-switcher';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { useDirection } from '@/hooks/use-direction';
@@ -128,6 +129,7 @@ export default function Welcome() {
                         </Link>
 
                         <div className="flex items-center gap-2">
+                            <AppearanceSwitcher />
                             <LocaleSwitcher />
                             {auth.user ? (
                                 <Button asChild size="sm">

@@ -164,6 +164,15 @@ import { StatusBadge } from '@/components/ui/status-badge';
 <StatusBadge status="pending" locale="ar" />;
 ```
 
+## Appearance switcher
+
+Reusable control: `components/shared/appearance-switcher.tsx`
+
+- Uses `useAppearance()` only — no separate theme state
+- Shared option labels live in `lib/appearance.ts`
+- Surface it on welcome, auth layouts, and authenticated top bar
+- Settings appearance tabs remain the expanded control for the same options
+
 ## Appearance defaults
 
 - First-time visitors default to **light**

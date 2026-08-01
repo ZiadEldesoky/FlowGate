@@ -1,5 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import AppLogoIcon from '@/components/layout/app-logo-icon';
+import { LocaleSwitcher } from '@/components/layout/locale-switcher';
+import { AppearanceSwitcher } from '@/components/shared/appearance-switcher';
 import { home } from '@/routes';
 import type { AuthLayoutProps } from '@/types';
 
@@ -12,6 +14,10 @@ export default function AuthSplitLayout({
 
     return (
         <div className="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
+            <div className="absolute end-4 top-4 z-30 flex items-center gap-2">
+                <AppearanceSwitcher />
+                <LocaleSwitcher />
+            </div>
             <div className="relative hidden h-full flex-col border-e bg-primary p-10 text-primary-foreground lg:flex">
                 <Link
                     href={home()}

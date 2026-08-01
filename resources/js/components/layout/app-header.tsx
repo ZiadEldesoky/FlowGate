@@ -3,7 +3,9 @@ import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
 import AppLogo from '@/components/layout/app-logo';
 import AppLogoIcon from '@/components/layout/app-logo-icon';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
+import { LocaleSwitcher } from '@/components/layout/locale-switcher';
 import { UserMenuContent } from '@/components/layout/user-menu-content';
+import { AppearanceSwitcher } from '@/components/shared/appearance-switcher';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -210,6 +212,10 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                     </Tooltip>
                                 ))}
                             </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <AppearanceSwitcher />
+                            <LocaleSwitcher />
                         </div>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
