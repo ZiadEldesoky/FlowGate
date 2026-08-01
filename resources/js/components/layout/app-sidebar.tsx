@@ -27,7 +27,7 @@ import type { NavItem } from '@/types';
 export function AppSidebar() {
     const { isRtl, locale } = useDirection();
     const { auth } = usePage().props;
-    const canViewApprovals = Boolean(auth.can?.viewApprovalQueue);
+    const canViewApprovals = auth.can.viewApprovalQueue;
 
     const mainNavItems: NavItem[] = [
         {

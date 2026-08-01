@@ -12,8 +12,8 @@ export type User = {
 
 export type Auth = {
     user: User | null;
-    can?: {
-        viewApprovalQueue?: boolean;
+    can: {
+        viewApprovalQueue: boolean;
     };
 };
 

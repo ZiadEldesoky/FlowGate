@@ -1,54 +1,53 @@
 /**
- * Temporary URL builders for the approvals queue.
- * Root will add backend routes; replace with generated Wayfinder helpers then.
- * Keep path construction centralized here.
+ * Thin frontend accessors over generated Wayfinder helpers.
+ * Generated artifacts live in resources/js/routes (gitignored).
+ * Run: php artisan wayfinder:generate --with-form
  */
 import type { InertiaLinkProps } from '@inertiajs/react';
+import { toUrl } from '@/lib/utils';
+import { index as indexRoute } from '@/routes/approvals';
 
 export type ApprovalsIndexQuery = {
     search?: string;
     page?: number | string | null;
 };
 
-function buildQuery(
-    params: Record<string, string | number | null | undefined> = {},
-): string {
-    const search = new URLSearchParams();
+function compactQuery(
+    query: ApprovalsIndexQuery = {},
+): Record<string, string | number> {
+    const params: Record<string, string | number> = {};
 
-    Object.entries(params).forEach(([key, value]) => {
-        if (value === null || value === undefined) {
-            return;
-        }
+    if (query.search && query.search.trim().length > 0) {
+        params.search = query.search.trim();
+    }
 
-        const normalized = String(value).trim();
+    if (
+        query.page !== null &&
+        query.page !== undefined &&
+        String(query.page).length > 0
+    ) {
+        params.page = query.page;
+    }
 
-        if (normalized.length === 0) {
-            return;
-        }
-
-        search.set(key, normalized);
-    });
-
-    const query = search.toString();
-
-    return query ? `?${query}` : '';
+    return params;
 }
 
-function asHref(url: string): NonNullable<InertiaLinkProps['href']> {
-    return url;
+function asHref(
+    definition: NonNullable<InertiaLinkProps['href']>,
+): NonNullable<InertiaLinkProps['href']> {
+    return definition;
 }
 
 export const approvalRoutes = {
-    index: (query: ApprovalsIndexQuery = {}) =>
-        asHref(
-            `/approvals${buildQuery({
-                search: query.search,
-                page: query.page,
-            })}`,
-        ),
+    index: (query: ApprovalsIndexQuery = {}) => {
+        const params = compactQuery(query);
+
+        return asHref(
+            indexRoute(
+                Object.keys(params).length > 0 ? { query: params } : undefined,
+            ),
+        );
+    },
     indexUrl: (query: ApprovalsIndexQuery = {}): string =>
-        `/approvals${buildQuery({
-            search: query.search,
-            page: query.page,
-        })}`,
+        toUrl(approvalRoutes.index(query)),
 } as const;

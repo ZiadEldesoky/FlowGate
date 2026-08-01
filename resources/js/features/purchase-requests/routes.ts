@@ -1,7 +1,6 @@
 /**
- * Frontend accessors over generated Wayfinder helpers, with temporary
- * builders for Phase 03 decision routes until backend Wayfinder generation
- * includes them.
+ * Thin frontend accessors over generated Wayfinder helpers for purchase
+ * request intake and decision routes.
  *
  * Generated artifacts live in resources/js/routes (gitignored).
  * Run: php artisan wayfinder:generate --with-form
@@ -9,9 +8,12 @@
 import type { InertiaLinkProps } from '@inertiajs/react';
 import { toUrl } from '@/lib/utils';
 import {
+    approveManagerReview as approveManagerReviewRoute,
+    approveProcurementReview as approveProcurementReviewRoute,
     create as createRoute,
     edit as editRoute,
     index as indexRoute,
+    reject as rejectRoute,
     show as showRoute,
     store as storeRoute,
     submit as submitRoute,
@@ -54,18 +56,6 @@ function asHref(
     return definition;
 }
 
-/**
- * Temporary decision route builders. Replace with generated helpers once
- * approve/reject routes exist in Wayfinder output.
- */
-const decisionPaths = {
-    approveManagerReview: (id: number | string): string =>
-        `/purchase-requests/${id}/approve-manager-review`,
-    approveProcurementReview: (id: number | string): string =>
-        `/purchase-requests/${id}/approve-procurement-review`,
-    reject: (id: number | string): string => `/purchase-requests/${id}/reject`,
-} as const;
-
 export const purchaseRequestRoutes = {
     index: (query: PurchaseRequestIndexQuery = {}) => {
         const params = compactQuery(query);
@@ -98,10 +88,16 @@ export const purchaseRequestRoutes = {
         asHref(submitRoute(purchaseRequestId)),
     submitUrl: (purchaseRequestId: number | string): string =>
         toUrl(submitRoute(purchaseRequestId)),
+    approveManagerReview: (purchaseRequestId: number | string) =>
+        asHref(approveManagerReviewRoute(purchaseRequestId)),
     approveManagerReviewUrl: (purchaseRequestId: number | string): string =>
-        decisionPaths.approveManagerReview(purchaseRequestId),
+        toUrl(approveManagerReviewRoute(purchaseRequestId)),
+    approveProcurementReview: (purchaseRequestId: number | string) =>
+        asHref(approveProcurementReviewRoute(purchaseRequestId)),
     approveProcurementReviewUrl: (purchaseRequestId: number | string): string =>
-        decisionPaths.approveProcurementReview(purchaseRequestId),
+        toUrl(approveProcurementReviewRoute(purchaseRequestId)),
+    reject: (purchaseRequestId: number | string) =>
+        asHref(rejectRoute(purchaseRequestId)),
     rejectUrl: (purchaseRequestId: number | string): string =>
-        decisionPaths.reject(purchaseRequestId),
+        toUrl(rejectRoute(purchaseRequestId)),
 } as const;
