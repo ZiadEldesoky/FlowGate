@@ -10,6 +10,7 @@ export type UseDirectionReturn = {
 };
 
 const STORAGE_KEY = 'flowgate-locale';
+const COOKIE_KEY = 'locale';
 const listeners = new Set<() => void>();
 let currentLocale: AppLocale = 'ar';
 
@@ -27,6 +28,15 @@ const readStoredLocale = (): AppLocale => {
 
 const directionFor = (locale: AppLocale): TextDirection =>
     locale === 'ar' ? 'rtl' : 'ltr';
+
+const persistLocaleCookie = (locale: AppLocale): void => {
+    if (typeof document === 'undefined') {
+        return;
+    }
+
+    const maxAge = 365 * 24 * 60 * 60;
+    document.cookie = `${COOKIE_KEY}=${locale};path=/;max-age=${maxAge};SameSite=Lax`;
+};
 
 const applyDocumentDirection = (locale: AppLocale): void => {
     if (typeof document === 'undefined') {
@@ -64,6 +74,7 @@ export function initializeDirection(defaultLocale: AppLocale = 'ar'): void {
     }
 
     currentLocale = readStoredLocale();
+    persistLocaleCookie(currentLocale);
     applyDocumentDirection(currentLocale);
 }
 
@@ -81,6 +92,7 @@ export function useDirection(): UseDirectionReturn {
 
         if (isBrowser()) {
             localStorage.setItem(STORAGE_KEY, next);
+            persistLocaleCookie(next);
         }
 
         applyDocumentDirection(next);
