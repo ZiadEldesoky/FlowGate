@@ -40,7 +40,6 @@ import {
     PRESENTATION_STATUSES,
     getPresentationStatusLabel,
 } from '@/lib/status';
-import { dashboard } from '@/routes';
 import type { PresentationStatus } from '@/types/status';
 
 type PreviewView = 'ready' | 'loading' | 'empty' | 'error';
@@ -390,12 +389,3 @@ export default function Dashboard() {
         </>
     );
 }
-
-Dashboard.layout = {
-    breadcrumbs: [
-        {
-            title: 'Dashboard',
-            href: dashboard(),
-        },
-    ],
-};

@@ -22,19 +22,33 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
             <SidebarMenu>
                 {items.map((item) => (
                     <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton
-                            asChild
-                            isActive={isCurrentUrl(item.href)}
-                            tooltip={{
-                                children: item.title,
-                                side: isRtl ? 'left' : 'right',
-                            }}
-                        >
-                            <Link href={item.href} prefetch>
+                        {item.disabled ? (
+                            <SidebarMenuButton
+                                type="button"
+                                disabled
+                                tooltip={{
+                                    children: item.title,
+                                    side: isRtl ? 'left' : 'right',
+                                }}
+                            >
                                 {item.icon && <item.icon />}
                                 <span>{item.title}</span>
-                            </Link>
-                        </SidebarMenuButton>
+                            </SidebarMenuButton>
+                        ) : (
+                            <SidebarMenuButton
+                                asChild
+                                isActive={isCurrentUrl(item.href)}
+                                tooltip={{
+                                    children: item.title,
+                                    side: isRtl ? 'left' : 'right',
+                                }}
+                            >
+                                <Link href={item.href} prefetch>
+                                    {item.icon && <item.icon />}
+                                    <span>{item.title}</span>
+                                </Link>
+                            </SidebarMenuButton>
+                        )}
                     </SidebarMenuItem>
                 ))}
             </SidebarMenu>

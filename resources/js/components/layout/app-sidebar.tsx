@@ -35,21 +35,25 @@ export function AppSidebar() {
             title: locale === 'ar' ? 'طلبات الشراء' : 'Purchase requests',
             href: dashboard(),
             icon: ShoppingCart,
+            disabled: true,
         },
         {
             title: locale === 'ar' ? 'الموافقات' : 'Approvals',
             href: dashboard(),
             icon: CheckSquare,
+            disabled: true,
         },
         {
             title: locale === 'ar' ? 'الإشعارات' : 'Notifications',
             href: dashboard(),
             icon: Bell,
+            disabled: true,
         },
         {
             title: locale === 'ar' ? 'الإدارة' : 'Administration',
             href: dashboard(),
             icon: Settings2,
+            disabled: true,
         },
     ];
 
