@@ -114,6 +114,18 @@ composer dev
 The default local database is SQLite. Copy `.env.example` to `.env` if the setup
 script has not already done so.
 
+### Demo accounts
+
+Run `php artisan db:seed` to create an idempotent demo organization and purchase
+requests. Every demo account uses the password `password`.
+
+| Role | Email |
+| --- | --- |
+| Requester | `test@example.com` |
+| Manager | `manager@flowgate.test` |
+| Procurement | `procurement@flowgate.test` |
+| Administrator | `admin@flowgate.test` |
+
 ## Quality gates
 
 ```bash
