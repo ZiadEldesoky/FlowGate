@@ -1,5 +1,6 @@
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { LocaleSwitcher } from '@/components/layout/locale-switcher';
+import { AppearanceSwitcher } from '@/components/shared/appearance-switcher';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
 
@@ -15,6 +16,7 @@ export function AppSidebarHeader({
                 <Breadcrumbs breadcrumbs={breadcrumbs} />
             </div>
             <div className="flex shrink-0 items-center gap-2">
+                <AppearanceSwitcher />
                 <LocaleSwitcher />
             </div>
         </header>
