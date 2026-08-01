@@ -18,6 +18,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { purchaseRequestRoutes } from '@/features/purchase-requests';
 import { useDirection } from '@/hooks/use-direction';
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
@@ -33,9 +34,8 @@ export function AppSidebar() {
         },
         {
             title: locale === 'ar' ? 'طلبات الشراء' : 'Purchase requests',
-            href: dashboard(),
+            href: purchaseRequestRoutes.index(),
             icon: ShoppingCart,
-            disabled: true,
         },
         {
             title: locale === 'ar' ? 'الموافقات' : 'Approvals',
@@ -67,7 +67,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link href={purchaseRequestRoutes.index()} prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>
