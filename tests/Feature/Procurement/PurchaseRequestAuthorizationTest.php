@@ -25,6 +25,8 @@ it('returns only workflow actions authorized by the policy', function (): void {
         'department_id' => $otherDepartment->id,
         'role' => UserRole::Manager,
     ]);
+    $department->update(['manager_id' => $manager->id]);
+    $otherDepartment->update(['manager_id' => $otherManager->id]);
     $purchaseRequest = PurchaseRequest::factory()->create([
         'department_id' => $department->id,
         'requester_id' => $requester->id,

@@ -12,6 +12,8 @@ interface through Inertia.
 - One `PurchaseRequestWorkflow` state machine for all transition rules.
 - Policies as the only authorization boundary.
 - Atomic status, approval, and activity-log writes.
+- Role-scoped approval queues for designated managers and procurement reviewers.
+- Manager approval, procurement approval, and reason-required rejection flows.
 - Events dispatched only after the surrounding database transaction commits.
 - Eloquent models limited to relationships, casts, and query scopes.
 - Arabic RTL and English LTR from one component system.
