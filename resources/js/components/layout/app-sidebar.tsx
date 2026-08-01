@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import {
     Bell,
     CheckSquare,
@@ -18,6 +18,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { approvalRoutes } from '@/features/approvals';
 import { purchaseRequestRoutes } from '@/features/purchase-requests';
 import { useDirection } from '@/hooks/use-direction';
 import { dashboard } from '@/routes';
@@ -25,6 +26,8 @@ import type { NavItem } from '@/types';
 
 export function AppSidebar() {
     const { isRtl, locale } = useDirection();
+    const { auth } = usePage().props;
+    const canViewApprovals = Boolean(auth.can?.viewApprovalQueue);
 
     const mainNavItems: NavItem[] = [
         {
@@ -37,12 +40,15 @@ export function AppSidebar() {
             href: purchaseRequestRoutes.index(),
             icon: ShoppingCart,
         },
-        {
-            title: locale === 'ar' ? 'الموافقات' : 'Approvals',
-            href: dashboard(),
-            icon: CheckSquare,
-            disabled: true,
-        },
+        ...(canViewApprovals
+            ? [
+                  {
+                      title: locale === 'ar' ? 'الموافقات' : 'Approvals',
+                      href: approvalRoutes.index(),
+                      icon: CheckSquare,
+                  } satisfies NavItem,
+              ]
+            : []),
         {
             title: locale === 'ar' ? 'الإشعارات' : 'Notifications',
             href: dashboard(),
