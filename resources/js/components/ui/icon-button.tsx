@@ -1,16 +1,13 @@
 import * as React from 'react';
-import type { VariantProps } from 'class-variance-authority';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 type IconButtonProps = Omit<
-    React.ComponentProps<'button'>,
+    React.ComponentProps<typeof Button>,
     'children'
-> &
-    VariantProps<typeof buttonVariants> & {
+> & {
         label: string;
         children: React.ReactNode;
-        asChild?: boolean;
     };
 
 function IconButton({

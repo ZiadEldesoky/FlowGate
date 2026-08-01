@@ -12,7 +12,7 @@ import type { NavItem } from '@/types';
 
 export function NavMain({ items = [] }: { items: NavItem[] }) {
     const { isCurrentUrl } = useCurrentUrl();
-    const { locale } = useDirection();
+    const { isRtl, locale } = useDirection();
 
     return (
         <SidebarGroup className="px-2 py-0">
@@ -25,7 +25,10 @@ export function NavMain({ items = [] }: { items: NavItem[] }) {
                         <SidebarMenuButton
                             asChild
                             isActive={isCurrentUrl(item.href)}
-                            tooltip={{ children: item.title }}
+                            tooltip={{
+                                children: item.title,
+                                side: isRtl ? 'left' : 'right',
+                            }}
                         >
                             <Link href={item.href} prefetch>
                                 {item.icon && <item.icon />}

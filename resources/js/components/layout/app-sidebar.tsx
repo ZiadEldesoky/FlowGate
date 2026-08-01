@@ -23,7 +23,7 @@ import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 
 export function AppSidebar() {
-    const { locale } = useDirection();
+    const { isRtl, locale } = useDirection();
 
     const mainNavItems: NavItem[] = [
         {
@@ -54,7 +54,11 @@ export function AppSidebar() {
     ];
 
     return (
-        <Sidebar collapsible="icon" variant="inset">
+        <Sidebar
+            side={isRtl ? 'right' : 'left'}
+            collapsible="icon"
+            variant="inset"
+        >
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>

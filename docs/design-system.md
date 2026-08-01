@@ -90,7 +90,9 @@ Page composition should favor compact operational density, not marketing hero sp
 ### Radius and elevation
 
 - Base radius: `0.5rem` (8px)
-- Derivatives: 6px / 4px via `--radius-md` / `--radius-sm`
+- Small and medium derivatives: 6px via `--radius-sm` / `--radius-md`
+- Larger radius utilities are capped at 8px; full circles are reserved for
+  avatars and inherently circular controls
 - Shadows: `--elevation-xs|sm|md` mapped to `shadow-xs|sm|md`
 - Avoid oversized rounded shapes and decorative glass/gradient chrome
 
@@ -122,7 +124,7 @@ Existing starter primitives are preserved and extended. Prefer these instead of 
 | StatusBadge | `components/ui/status-badge` | maps presentation statuses only |
 | Table | `components/ui/table` | scannable dense table |
 | Pagination | `components/ui/pagination` | RTL-aware chevrons |
-| FormField | `components/ui/form-field` | label + description + error wiring |
+| FormField | `components/ui/form-field` | label + description + ARIA error wiring |
 | Alert | `components/ui/alert` | default / destructive / success / warning / info |
 | EmptyState | `components/ui/empty-state` | dashed empty region |
 | Skeleton | `components/ui/skeleton` | loading placeholders |
@@ -152,6 +154,9 @@ Rules:
 2. The config provides bilingual labels, short descriptions, and CSS classes
 3. It must **not** infer next steps, allowed transitions, permissions, or totals
 4. Use `StatusBadge` or `getPresentationStatus()` for rendering
+5. Backend review states (`pending_manager_review` and
+   `pending_procurement_review`) map to the neutral `pending` presentation tone;
+   this is a visual alias only
 
 ```tsx
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -167,6 +172,7 @@ import { StatusBadge } from '@/components/ui/status-badge';
 - `LocaleSwitcher` in the app header toggles `ar` / `en`
 - Prefer logical CSS utilities: `ms-*`, `me-*`, `ps-*`, `pe-*`, `text-start`, `text-end`, `start-*`, `end-*`
 - Chevron icons that imply direction should use `rtl:rotate-180` when needed
+- The application sidebar moves to the right in RTL and back to the left in LTR
 
 Do not hard-code left/right layout for operational chrome unless a physical direction is truly required.
 

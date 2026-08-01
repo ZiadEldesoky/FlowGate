@@ -1,5 +1,4 @@
 import { Languages } from 'lucide-react';
-import { IconButton } from '@/components/ui/icon-button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -7,6 +6,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { IconButton } from '@/components/ui/icon-button';
 import { useDirection } from '@/hooks/use-direction';
 import type { AppLocale } from '@/types/locale';
 

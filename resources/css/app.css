@@ -38,7 +38,12 @@
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
-    --radius-sm: calc(var(--radius) - 4px);
+    --radius-sm: calc(var(--radius) - 2px);
+    --radius-xs: calc(var(--radius) - 2px);
+    --radius-xl: var(--radius);
+    --radius-2xl: var(--radius);
+    --radius-3xl: var(--radius);
+    --radius-4xl: var(--radius);
 
     --shadow-xs: var(--elevation-xs);
     --shadow-sm: var(--elevation-sm);
@@ -175,7 +180,7 @@
     --chart-4: oklch(0.55 0.2 25);
     --chart-5: oklch(0.5 0.05 255);
 
-    /* Geometry: 8px base radius (6px/4px derivatives) */
+    /* Geometry: operational surfaces stay within 6px–8px */
     --radius: 0.5rem;
 
     /* Elevation */
@@ -280,6 +285,7 @@
     }
 
     :focus-visible {
-        outline: none;
+        outline: 2px solid var(--ring);
+        outline-offset: 2px;
     }
 }

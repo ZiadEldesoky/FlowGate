@@ -9,7 +9,12 @@ type FormFieldProps = {
     error?: string;
     required?: boolean;
     className?: string;
-    children: React.ReactNode;
+    children: React.ReactElement<{
+        id?: string;
+        'aria-describedby'?: string;
+        'aria-invalid'?: boolean | 'true' | 'false';
+        'aria-required'?: boolean | 'true' | 'false';
+    }>;
 };
 
 function FormField({
@@ -23,6 +28,19 @@ function FormField({
 }: FormFieldProps) {
     const descriptionId = description ? `${id}-description` : undefined;
     const errorId = error ? `${id}-error` : undefined;
+    const describedBy = [
+        children.props['aria-describedby'],
+        descriptionId,
+        errorId,
+    ]
+        .filter(Boolean)
+        .join(' ');
+    const control = React.cloneElement(children, {
+        id: children.props.id ?? id,
+        'aria-describedby': describedBy || undefined,
+        'aria-invalid': error ? true : children.props['aria-invalid'],
+        'aria-required': required ? true : children.props['aria-required'],
+    });
 
     return (
         <div
@@ -37,7 +55,7 @@ function FormField({
                     </span>
                 ) : null}
             </Label>
-            {children}
+            {control}
             {description ? (
                 <p
                     id={descriptionId}

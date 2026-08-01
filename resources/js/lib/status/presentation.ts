@@ -16,6 +16,13 @@ export const PRESENTATION_STATUSES: readonly PresentationStatus[] = [
     'cancelled',
 ] as const;
 
+const STATUS_PRESENTATION_ALIASES: Readonly<
+    Record<string, PresentationStatus>
+> = {
+    pending_manager_review: 'pending',
+    pending_procurement_review: 'pending',
+};
+
 export const presentationStatusConfig: Record<
     PresentationStatus,
     PresentationStatusConfig
@@ -113,9 +120,14 @@ export function getPresentationStatus(
         return null;
     }
 
-    const key = status.toLowerCase() as PresentationStatus;
+    const normalizedStatus = status.toLowerCase();
+    const key =
+        STATUS_PRESENTATION_ALIASES[normalizedStatus] ??
+        PRESENTATION_STATUSES.find(
+            (candidate) => candidate === normalizedStatus,
+        );
 
-    return presentationStatusConfig[key] ?? null;
+    return key ? presentationStatusConfig[key] : null;
 }
 
 export function getPresentationStatusLabel(
