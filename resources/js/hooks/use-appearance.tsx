@@ -9,11 +9,16 @@ export type UseAppearanceReturn = {
     readonly updateAppearance: (mode: Appearance) => void;
 };
 
+const STORAGE_KEY = 'appearance';
+const DEFAULT_APPEARANCE: Appearance = 'light';
+
 const listeners = new Set<() => void>();
-let currentAppearance: Appearance = 'system';
+let currentAppearance: Appearance = DEFAULT_APPEARANCE;
+
+const isBrowser = (): boolean => typeof window !== 'undefined';
 
 const prefersDark = (): boolean => {
-    if (typeof window === 'undefined') {
+    if (!isBrowser()) {
         return false;
     }
 
@@ -29,12 +34,20 @@ const setCookie = (name: string, value: string, days = 365): void => {
     document.cookie = `${name}=${value};path=/;max-age=${maxAge};SameSite=Lax`;
 };
 
-const getStoredAppearance = (): Appearance => {
-    if (typeof window === 'undefined') {
-        return 'system';
+const normalizeAppearance = (value: string | null | undefined): Appearance => {
+    if (value === 'light' || value === 'dark' || value === 'system') {
+        return value;
     }
 
-    return (localStorage.getItem('appearance') as Appearance) || 'system';
+    return DEFAULT_APPEARANCE;
+};
+
+const getStoredAppearance = (): Appearance => {
+    if (!isBrowser()) {
+        return DEFAULT_APPEARANCE;
+    }
+
+    return normalizeAppearance(localStorage.getItem(STORAGE_KEY));
 };
 
 const isDarkMode = (appearance: Appearance): boolean => {
@@ -55,35 +68,44 @@ const applyTheme = (appearance: Appearance): void => {
 const subscribe = (callback: () => void) => {
     listeners.add(callback);
 
-    return () => listeners.delete(callback);
+    return () => {
+        listeners.delete(callback);
+    };
 };
 
-const notify = (): void => listeners.forEach((listener) => listener());
+const notify = (): void => {
+    listeners.forEach((listener) => listener());
+};
 
 const mediaQuery = (): MediaQueryList | null => {
-    if (typeof window === 'undefined') {
+    if (!isBrowser()) {
         return null;
     }
 
     return window.matchMedia('(prefers-color-scheme: dark)');
 };
 
-const handleSystemThemeChange = (): void => applyTheme(currentAppearance);
+const handleSystemThemeChange = (): void => {
+    applyTheme(currentAppearance);
+};
 
+/**
+ * First-time visitors default to light.
+ * Explicit light/dark/system choices are preserved once saved.
+ */
 export function initializeTheme(): void {
-    if (typeof window === 'undefined') {
+    if (!isBrowser()) {
         return;
     }
 
-    if (!localStorage.getItem('appearance')) {
-        localStorage.setItem('appearance', 'system');
-        setCookie('appearance', 'system');
+    if (!localStorage.getItem(STORAGE_KEY)) {
+        localStorage.setItem(STORAGE_KEY, DEFAULT_APPEARANCE);
+        setCookie(STORAGE_KEY, DEFAULT_APPEARANCE);
     }
 
     currentAppearance = getStoredAppearance();
     applyTheme(currentAppearance);
 
-    // Set up system theme change listener
     mediaQuery()?.addEventListener('change', handleSystemThemeChange);
 }
 
@@ -91,7 +113,7 @@ export function useAppearance(): UseAppearanceReturn {
     const appearance: Appearance = useSyncExternalStore(
         subscribe,
         () => currentAppearance,
-        () => 'system',
+        () => DEFAULT_APPEARANCE,
     );
 
     const resolvedAppearance: ResolvedAppearance = isDarkMode(appearance)
@@ -100,13 +122,8 @@ export function useAppearance(): UseAppearanceReturn {
 
     const updateAppearance = (mode: Appearance): void => {
         currentAppearance = mode;
-
-        // Store in localStorage for client-side persistence...
-        localStorage.setItem('appearance', mode);
-
-        // Store in cookie for SSR...
-        setCookie('appearance', mode);
-
+        localStorage.setItem(STORAGE_KEY, mode);
+        setCookie(STORAGE_KEY, mode);
         applyTheme(mode);
         notify();
     };
