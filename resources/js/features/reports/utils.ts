@@ -1,4 +1,5 @@
 import { parseDecimal } from '@/features/purchase-requests';
+import type { AppLocale } from '@/types/locale';
 import type { ProcurementMonthlyTrendItem } from '@/types/reports';
 
 export function maxTrendAmount(items: ProcurementMonthlyTrendItem[]): number {
@@ -14,5 +15,43 @@ export function trendBarWidth(amount: string, maxAmount: number): number {
 
     const value = parseDecimal(amount);
 
-    return Math.max(0, Math.min(100, (value / maxAmount) * 100));
+    if (value <= 0) {
+        return 0;
+    }
+
+    return Math.max(2, Math.min(100, (value / maxAmount) * 100));
+}
+
+export function statusBarWidth(count: number, maxCount: number): number {
+    if (count <= 0 || maxCount <= 0) {
+        return 0;
+    }
+
+    return Math.max(2, Math.min(100, (count / maxCount) * 100));
+}
+
+/**
+ * Presentation-only percentage formatting for authoritative backend rates.
+ * Accepts values like "50.00" or 50.
+ */
+export function formatPercent(
+    value: string | number,
+    locale: AppLocale,
+): string {
+    const parsed =
+        typeof value === 'number' ? value : Number(String(value).trim());
+
+    if (!Number.isFinite(parsed)) {
+        return String(value);
+    }
+
+    try {
+        return new Intl.NumberFormat(locale === 'ar' ? 'ar-EG' : 'en-EG', {
+            style: 'percent',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+        }).format(parsed / 100);
+    } catch {
+        return `${parsed}%`;
+    }
 }

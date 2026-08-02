@@ -1,6 +1,7 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { Download, Filter, Search } from 'lucide-react';
 import { useState } from 'react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { FilterBar, FilterField } from '@/components/ui/filter-bar';
@@ -20,6 +21,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Spinner } from '@/components/ui/spinner';
 import {
     Table,
     TableBody,
@@ -34,6 +36,7 @@ import {
     PurchaseRequestTable,
 } from '@/features/purchase-requests';
 import {
+    formatPercent,
     formatReportsCopy,
     getReportingScopeLabel,
     getReportsCopy,
@@ -43,7 +46,6 @@ import {
 } from '@/features/reports';
 import { useDirection } from '@/hooks/use-direction';
 import { getPresentationStatusLabel } from '@/lib/status';
-import type { PurchaseRequestStatus } from '@/types/purchase-request';
 import type { ProcurementReportPageProps } from '@/types/reports';
 
 const ALL = 'all';
@@ -62,12 +64,21 @@ export default function ProcurementReportPage({
     const t = getReportsCopy(locale);
     const purchaseCopy = getPurchaseRequestCopy(locale);
 
+    const page = usePage();
+    const errors = (page.props.errors ?? {}) as Partial<
+        Record<'from' | 'to' | 'status' | 'department_id', string>
+    >;
+    const hasFilterErrors = Boolean(
+        errors.from || errors.to || errors.status || errors.department_id,
+    );
+
     const [from, setFrom] = useState(filters.from ?? '');
     const [to, setTo] = useState(filters.to ?? '');
     const [status, setStatus] = useState<string>(filters.status ?? ALL);
     const [departmentId, setDepartmentId] = useState<string>(
         filters.departmentId == null ? ALL : String(filters.departmentId),
     );
+    const [isFiltering, setIsFiltering] = useState(false);
 
     const applyFilters = (next?: {
         from?: string;
@@ -93,22 +104,22 @@ export default function ProcurementReportPage({
                 preserveState: true,
                 preserveScroll: true,
                 replace: true,
+                onStart: () => setIsFiltering(true),
+                onFinish: () => setIsFiltering(false),
             },
         );
     };
 
     const clearFilters = (): void => {
-        setFrom('');
-        setTo('');
-        setStatus(ALL);
-        setDepartmentId(ALL);
         router.get(
             reportRoutes.procurement.indexUrl(),
             {},
             {
-                preserveState: true,
+                preserveState: false,
                 preserveScroll: true,
                 replace: true,
+                onStart: () => setIsFiltering(true),
+                onFinish: () => setIsFiltering(false),
             },
         );
     };
@@ -150,6 +161,23 @@ export default function ProcurementReportPage({
                     }
                 />
 
+                {hasFilterErrors ? (
+                    <Alert variant="destructive" role="alert">
+                        <AlertTitle>{t.filterErrorsTitle}</AlertTitle>
+                        <AlertDescription>
+                            <div className="space-y-1">
+                                <p>{t.filterErrorsDescription}</p>
+                                {errors.from ? <p>{errors.from}</p> : null}
+                                {errors.to ? <p>{errors.to}</p> : null}
+                                {errors.status ? <p>{errors.status}</p> : null}
+                                {errors.department_id ? (
+                                    <p>{errors.department_id}</p>
+                                ) : null}
+                            </div>
+                        </AlertDescription>
+                    </Alert>
+                ) : null}
+
                 <FilterBar
                     actions={
                         <>
@@ -157,15 +185,23 @@ export default function ProcurementReportPage({
                                 type="button"
                                 size="sm"
                                 onClick={() => applyFilters()}
+                                disabled={isFiltering}
                             >
-                                <Search className="size-4" />
-                                {t.applyFilters}
+                                {isFiltering ? (
+                                    <Spinner />
+                                ) : (
+                                    <Search className="size-4" />
+                                )}
+                                {isFiltering
+                                    ? t.applyingFilters
+                                    : t.applyFilters}
                             </Button>
                             <Button
                                 type="button"
                                 variant="ghost"
                                 size="sm"
                                 onClick={clearFilters}
+                                disabled={isFiltering}
                             >
                                 <Filter className="size-4" />
                                 {t.clearFilters}
@@ -179,6 +215,7 @@ export default function ProcurementReportPage({
                             type="date"
                             value={from}
                             onChange={(event) => setFrom(event.target.value)}
+                            disabled={isFiltering}
                         />
                     </FilterField>
                     <FilterField label={t.to} htmlFor="report-to">
@@ -187,6 +224,7 @@ export default function ProcurementReportPage({
                             type="date"
                             value={to}
                             onChange={(event) => setTo(event.target.value)}
+                            disabled={isFiltering}
                         />
                     </FilterField>
                     <FilterField label={t.status} htmlFor="report-status">
@@ -196,6 +234,7 @@ export default function ProcurementReportPage({
                                 setStatus(value);
                                 applyFilters({ status: value });
                             }}
+                            disabled={isFiltering}
                         >
                             <SelectTrigger
                                 id="report-status"
@@ -228,6 +267,7 @@ export default function ProcurementReportPage({
                                 setDepartmentId(value);
                                 applyFilters({ departmentId: value });
                             }}
+                            disabled={isFiltering}
                         >
                             <SelectTrigger
                                 id="report-department"
@@ -285,7 +325,10 @@ export default function ProcurementReportPage({
                         {
                             key: 'rate',
                             label: t.completionRate,
-                            value: summary.completionRate,
+                            value: formatPercent(
+                                summary.completionRate,
+                                locale,
+                            ),
                         },
                     ]}
                 />
@@ -318,7 +361,7 @@ export default function ProcurementReportPage({
                                             <TableRow key={item.status}>
                                                 <TableCell>
                                                     {getPresentationStatusLabel(
-                                                        item.status as PurchaseRequestStatus,
+                                                        item.status,
                                                         locale,
                                                     )}
                                                 </TableCell>

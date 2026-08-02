@@ -1,4 +1,5 @@
 import { StatusBadge } from '@/components/ui/status-badge';
+import { statusBarWidth } from '@/features/reports/utils';
 import type { AppLocale } from '@/types/locale';
 import type { StatusBreakdownItem } from '@/types/reports';
 
@@ -23,12 +24,12 @@ export function StatusBreakdownList({
         );
     }
 
-    const max = Math.max(...items.map((item) => item.count), 1);
+    const max = Math.max(...items.map((item) => item.count), 0);
 
     return (
         <ul className="space-y-3">
             {items.map((item) => {
-                const width = Math.max(4, (item.count / max) * 100);
+                const width = statusBarWidth(item.count, max);
 
                 return (
                     <li key={item.status} className="space-y-1.5">
@@ -39,12 +40,12 @@ export function StatusBreakdownList({
                             </span>
                         </div>
                         <div
-                            className="h-2 overflow-hidden rounded-full bg-muted"
+                            className="h-2 overflow-hidden rounded-md bg-muted"
                             role="img"
                             aria-label={`${item.status}: ${item.count}`}
                         >
                             <div
-                                className="h-full rounded-full bg-primary/70"
+                                className="h-full rounded-md bg-primary/70"
                                 style={{ width: `${width}%` }}
                             />
                         </div>

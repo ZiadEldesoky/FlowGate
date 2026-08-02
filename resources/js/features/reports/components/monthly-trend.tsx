@@ -72,12 +72,12 @@ export function MonthlyTrend({
                                         )}
                                     </p>
                                     <div
-                                        className="h-2 overflow-hidden rounded-full bg-muted"
+                                        className="h-2 overflow-hidden rounded-md bg-muted"
                                         role="img"
                                         aria-label={`${item.month}: ${item.totalAmount}`}
                                     >
                                         <div
-                                            className="h-full rounded-full bg-primary/70"
+                                            className="h-full rounded-md bg-primary/70"
                                             style={{ width: `${width}%` }}
                                         />
                                     </div>

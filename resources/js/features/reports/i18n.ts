@@ -4,7 +4,7 @@ import type { ReportingScope } from '@/types/reports';
 export const reportsCopy = {
     ar: {
         dashboardTitle: 'لوحة المتابعة',
-        dashboardDescription: 'ملخص تشغيلي حسب نطاق عرضك من الخادم.',
+        dashboardDescription: 'ملخص تشغيلي ضمن نطاق مسؤولياتك.',
         scopeLabel: 'نطاق العرض',
         scopeOwn: 'طلباتي',
         scopeManaged: 'أقسامي',
@@ -24,8 +24,7 @@ export const reportsCopy = {
         openRequest: 'فتح',
         reportsNav: 'التقارير',
         procurementTitle: 'تقرير المشتريات التشغيلي',
-        procurementDescription:
-            'ملخصات وتفاصيل تشغيلية ضمن النطاق الذي يحدده الخادم.',
+        procurementDescription: 'ملخصات وتفاصيل تشغيلية ضمن نطاق مسؤولياتك.',
         filters: 'عوامل التصفية',
         from: 'من',
         to: 'إلى',
@@ -58,11 +57,15 @@ export const reportsCopy = {
         noResultsRange: 'لا توجد نتائج',
         notAvailable: '—',
         processing: 'جارٍ التصدير…',
+        applyingFilters: 'جارٍ التطبيق…',
+        filterErrorsTitle: 'تعذر تطبيق عوامل التصفية',
+        filterErrorsDescription:
+            'راجع التواريخ أو عوامل التصفية المحددة ثم حاول مرة أخرى.',
     },
     en: {
         dashboardTitle: 'Dashboard',
         dashboardDescription:
-            'Operational summary for the server-provided reporting scope.',
+            'Operational summary within your assigned responsibilities.',
         scopeLabel: 'View scope',
         scopeOwn: 'My requests',
         scopeManaged: 'Managed departments',
@@ -83,7 +86,7 @@ export const reportsCopy = {
         reportsNav: 'Reports',
         procurementTitle: 'Procurement operations report',
         procurementDescription:
-            'Operational summaries and detail within the server-provided scope.',
+            'Operational summaries and detail within your assigned responsibilities.',
         filters: 'Filters',
         from: 'From',
         to: 'To',
@@ -116,6 +119,10 @@ export const reportsCopy = {
         noResultsRange: 'No results',
         notAvailable: '—',
         processing: 'Exporting…',
+        applyingFilters: 'Applying…',
+        filterErrorsTitle: 'Could not apply filters',
+        filterErrorsDescription:
+            'Review the selected dates or filters and try again.',
     },
 } as const;
 
