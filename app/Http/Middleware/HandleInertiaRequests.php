@@ -57,6 +57,11 @@ class HandleInertiaRequests extends Middleware
                             'viewApprovalQueue',
                             PurchaseRequest::class,
                         ),
+                    'viewProcurementReports' => $user instanceof User
+                        && Gate::forUser($user)->allows(
+                            'viewReports',
+                            PurchaseRequest::class,
+                        ),
                     'manageOrganization' => $user instanceof User
                         && Gate::forUser($user)->allows(
                             'viewAny',

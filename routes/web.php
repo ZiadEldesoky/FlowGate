@@ -1,12 +1,15 @@
 <?php
 
 use App\Http\Controllers\ApprovalQueueController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DepartmentAdministrationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationReadAllController;
 use App\Http\Controllers\NotificationReadController;
 use App\Http\Controllers\OrganizationActivityController;
 use App\Http\Controllers\OrganizationUserAdministrationController;
+use App\Http\Controllers\ProcurementReportController;
+use App\Http\Controllers\ProcurementReportExportController;
 use App\Http\Controllers\PurchaseRequestCancellationController;
 use App\Http\Controllers\PurchaseRequestCompletionController;
 use App\Http\Controllers\PurchaseRequestController;
@@ -19,8 +22,23 @@ use Illuminate\Support\Facades\Route;
 Route::inertia('/', 'welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::redirect('dashboard', 'purchase-requests')
+    Route::get('dashboard', DashboardController::class)
         ->name('dashboard');
+
+    Route::prefix('reports')
+        ->name('reports.')
+        ->middleware('can:viewReports,App\\Models\\PurchaseRequest')
+        ->group(function () {
+            Route::get(
+                'procurement',
+                ProcurementReportController::class,
+            )->name('procurement.index');
+
+            Route::get(
+                'procurement/export',
+                ProcurementReportExportController::class,
+            )->name('procurement.export');
+        });
 
     Route::redirect('administration', '/administration/departments')
         ->middleware('can:viewAny,App\\Models\\Department')
