@@ -160,6 +160,7 @@ export default function AdministrationDepartmentsIndex({
                                 setCreateOpen(open);
 
                                 if (!open) {
+                                    createForm.reset();
                                     createForm.clearErrors();
                                 }
                             }}
@@ -180,88 +181,96 @@ export default function AdministrationDepartmentsIndex({
                                     </DialogDescription>
                                 </DialogHeader>
 
-                                {createForm.hasErrors ? (
-                                    <Alert variant="destructive">
-                                        <AlertTitle>
-                                            {t.validationSummary}
-                                        </AlertTitle>
-                                        <AlertDescription>
-                                            {t.validationSummary}
-                                        </AlertDescription>
-                                    </Alert>
-                                ) : null}
+                                <form
+                                    className="grid gap-4"
+                                    onSubmit={(event) => {
+                                        event.preventDefault();
+                                        onCreate();
+                                    }}
+                                >
+                                    {createForm.hasErrors ? (
+                                        <Alert variant="destructive">
+                                            <AlertTitle>
+                                                {t.validationTitle}
+                                            </AlertTitle>
+                                            <AlertDescription>
+                                                {t.validationSummary}
+                                            </AlertDescription>
+                                        </Alert>
+                                    ) : null}
 
-                                <div className="grid gap-3">
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="create-name">
-                                            {t.name}
-                                        </Label>
-                                        <Input
-                                            id="create-name"
-                                            value={createForm.data.name}
-                                            onChange={(event) =>
-                                                createForm.setData(
-                                                    'name',
-                                                    event.target.value,
-                                                )
-                                            }
-                                            disabled={createForm.processing}
-                                            aria-invalid={Boolean(
-                                                createForm.errors.name,
-                                            )}
-                                        />
-                                        <InputError
-                                            message={createForm.errors.name}
-                                        />
+                                    <div className="grid gap-3">
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="create-name">
+                                                {t.name}
+                                            </Label>
+                                            <Input
+                                                id="create-name"
+                                                value={createForm.data.name}
+                                                onChange={(event) =>
+                                                    createForm.setData(
+                                                        'name',
+                                                        event.target.value,
+                                                    )
+                                                }
+                                                disabled={createForm.processing}
+                                                aria-invalid={Boolean(
+                                                    createForm.errors.name,
+                                                )}
+                                                autoFocus
+                                            />
+                                            <InputError
+                                                message={createForm.errors.name}
+                                            />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="create-code">
+                                                {t.code}
+                                            </Label>
+                                            <Input
+                                                id="create-code"
+                                                value={createForm.data.code}
+                                                onChange={(event) =>
+                                                    createForm.setData(
+                                                        'code',
+                                                        event.target.value,
+                                                    )
+                                                }
+                                                disabled={createForm.processing}
+                                                aria-invalid={Boolean(
+                                                    createForm.errors.code,
+                                                )}
+                                                className="font-mono uppercase"
+                                            />
+                                            <InputError
+                                                message={createForm.errors.code}
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="grid gap-2">
-                                        <Label htmlFor="create-code">
-                                            {t.code}
-                                        </Label>
-                                        <Input
-                                            id="create-code"
-                                            value={createForm.data.code}
-                                            onChange={(event) =>
-                                                createForm.setData(
-                                                    'code',
-                                                    event.target.value,
-                                                )
-                                            }
-                                            disabled={createForm.processing}
-                                            aria-invalid={Boolean(
-                                                createForm.errors.code,
-                                            )}
-                                            className="font-mono uppercase"
-                                        />
-                                        <InputError
-                                            message={createForm.errors.code}
-                                        />
-                                    </div>
-                                </div>
 
-                                <DialogFooter>
-                                    <DialogClose asChild>
+                                    <DialogFooter>
+                                        <DialogClose asChild>
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                disabled={createForm.processing}
+                                            >
+                                                {t.cancel}
+                                            </Button>
+                                        </DialogClose>
                                         <Button
-                                            type="button"
-                                            variant="outline"
+                                            type="submit"
                                             disabled={createForm.processing}
                                         >
-                                            {t.cancel}
+                                            {createForm.processing ? (
+                                                <Spinner />
+                                            ) : null}
+                                            {createForm.processing
+                                                ? t.processing
+                                                : t.create}
                                         </Button>
-                                    </DialogClose>
-                                    <Button
-                                        type="button"
-                                        onClick={onCreate}
-                                        disabled={createForm.processing}
-                                    >
-                                        {createForm.processing ? (
-                                            <Spinner />
-                                        ) : null}
-                                        {createForm.processing
-                                            ? t.processing
-                                            : t.create}
-                                    </Button>
-                                </DialogFooter>
+                                    </DialogFooter>
+                                </form>
                             </DialogContent>
                         </Dialog>
                     }
@@ -421,125 +430,146 @@ export default function AdministrationDepartmentsIndex({
                             </DialogDescription>
                         </DialogHeader>
 
-                        {editForm.hasErrors ? (
-                            <Alert variant="destructive">
-                                <AlertTitle>{t.validationSummary}</AlertTitle>
-                                <AlertDescription>
-                                    {t.validationSummary}
-                                </AlertDescription>
-                            </Alert>
-                        ) : null}
+                        <form
+                            className="grid gap-4"
+                            onSubmit={(event) => {
+                                event.preventDefault();
+                                onUpdate();
+                            }}
+                        >
+                            {editForm.hasErrors ? (
+                                <Alert variant="destructive">
+                                    <AlertTitle>{t.validationTitle}</AlertTitle>
+                                    <AlertDescription>
+                                        {t.validationSummary}
+                                    </AlertDescription>
+                                </Alert>
+                            ) : null}
 
-                        <div className="grid gap-3">
-                            <div className="grid gap-2">
-                                <Label htmlFor="edit-name">{t.name}</Label>
-                                <Input
-                                    id="edit-name"
-                                    value={editForm.data.name}
-                                    onChange={(event) =>
-                                        editForm.setData(
-                                            'name',
-                                            event.target.value,
-                                        )
-                                    }
-                                    disabled={editForm.processing}
-                                    aria-invalid={Boolean(editForm.errors.name)}
-                                />
-                                <InputError message={editForm.errors.name} />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="edit-code">{t.code}</Label>
-                                <Input
-                                    id="edit-code"
-                                    value={editForm.data.code}
-                                    onChange={(event) =>
-                                        editForm.setData(
-                                            'code',
-                                            event.target.value,
-                                        )
-                                    }
-                                    disabled={editForm.processing}
-                                    aria-invalid={Boolean(editForm.errors.code)}
-                                    className="font-mono uppercase"
-                                />
-                                <InputError message={editForm.errors.code} />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="edit-manager">
-                                    {t.manager}
-                                </Label>
-                                <Select
-                                    value={
-                                        editForm.data.manager_id == null
-                                            ? NONE_MANAGER
-                                            : String(editForm.data.manager_id)
-                                    }
-                                    onValueChange={(value) =>
-                                        editForm.setData(
-                                            'manager_id',
-                                            value === NONE_MANAGER
-                                                ? null
-                                                : Number(value),
-                                        )
-                                    }
-                                    disabled={editForm.processing}
-                                >
-                                    <SelectTrigger
-                                        id="edit-manager"
-                                        className="w-full"
+                            <div className="grid gap-3">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="edit-name">{t.name}</Label>
+                                    <Input
+                                        id="edit-name"
+                                        value={editForm.data.name}
+                                        onChange={(event) =>
+                                            editForm.setData(
+                                                'name',
+                                                event.target.value,
+                                            )
+                                        }
+                                        disabled={editForm.processing}
                                         aria-invalid={Boolean(
-                                            editForm.errors.manager_id,
+                                            editForm.errors.name,
                                         )}
+                                        autoFocus
+                                    />
+                                    <InputError
+                                        message={editForm.errors.name}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="edit-code">{t.code}</Label>
+                                    <Input
+                                        id="edit-code"
+                                        value={editForm.data.code}
+                                        onChange={(event) =>
+                                            editForm.setData(
+                                                'code',
+                                                event.target.value,
+                                            )
+                                        }
+                                        disabled={editForm.processing}
+                                        aria-invalid={Boolean(
+                                            editForm.errors.code,
+                                        )}
+                                        className="font-mono uppercase"
+                                    />
+                                    <InputError
+                                        message={editForm.errors.code}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <Label htmlFor="edit-manager">
+                                        {t.manager}
+                                    </Label>
+                                    <Select
+                                        value={
+                                            editForm.data.manager_id == null
+                                                ? NONE_MANAGER
+                                                : String(
+                                                      editForm.data.manager_id,
+                                                  )
+                                        }
+                                        onValueChange={(value) =>
+                                            editForm.setData(
+                                                'manager_id',
+                                                value === NONE_MANAGER
+                                                    ? null
+                                                    : Number(value),
+                                            )
+                                        }
+                                        disabled={editForm.processing}
                                     >
-                                        <SelectValue
-                                            placeholder={t.noManager}
-                                        />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value={NONE_MANAGER}>
-                                            {t.noManager}
-                                        </SelectItem>
-                                        {(
-                                            editTarget?.managerCandidates ?? []
-                                        ).map((candidate) => (
-                                            <SelectItem
-                                                key={candidate.id}
-                                                value={String(candidate.id)}
-                                            >
-                                                {candidate.name} ·{' '}
-                                                {candidate.email}
+                                        <SelectTrigger
+                                            id="edit-manager"
+                                            className="w-full"
+                                            aria-invalid={Boolean(
+                                                editForm.errors.manager_id,
+                                            )}
+                                        >
+                                            <SelectValue
+                                                placeholder={t.noManager}
+                                            />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value={NONE_MANAGER}>
+                                                {t.noManager}
                                             </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <p className="text-xs text-muted-foreground">
-                                    {t.managerCandidatesHint}
-                                </p>
-                                <InputError
-                                    message={editForm.errors.manager_id}
-                                />
+                                            {(
+                                                editTarget?.managerCandidates ??
+                                                []
+                                            ).map((candidate) => (
+                                                <SelectItem
+                                                    key={candidate.id}
+                                                    value={String(candidate.id)}
+                                                >
+                                                    {candidate.name} ·{' '}
+                                                    {candidate.email}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <p className="text-xs text-muted-foreground">
+                                        {t.managerCandidatesHint}
+                                    </p>
+                                    <InputError
+                                        message={editForm.errors.manager_id}
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        <DialogFooter>
-                            <DialogClose asChild>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        disabled={editForm.processing}
+                                    >
+                                        {t.cancel}
+                                    </Button>
+                                </DialogClose>
                                 <Button
-                                    type="button"
-                                    variant="outline"
+                                    type="submit"
                                     disabled={editForm.processing}
                                 >
-                                    {t.cancel}
+                                    {editForm.processing ? <Spinner /> : null}
+                                    {editForm.processing
+                                        ? t.processing
+                                        : t.save}
                                 </Button>
-                            </DialogClose>
-                            <Button
-                                type="button"
-                                onClick={onUpdate}
-                                disabled={editForm.processing}
-                            >
-                                {editForm.processing ? <Spinner /> : null}
-                                {editForm.processing ? t.processing : t.save}
-                            </Button>
-                        </DialogFooter>
+                            </DialogFooter>
+                        </form>
                     </DialogContent>
                 </Dialog>
             </div>

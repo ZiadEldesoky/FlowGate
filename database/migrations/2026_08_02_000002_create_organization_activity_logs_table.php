@@ -25,7 +25,7 @@ return new class extends Migration
                 'user',
             ]);
             $table->unsignedBigInteger('subject_id');
-            $table->string('subject_label', 190);
+            $table->string('subject_label', 600);
             $table->json('changes');
             $table->timestamps();
 

@@ -11,10 +11,6 @@ use App\Models\PurchaseRequest;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia as Assert;
 
-beforeEach(function (): void {
-    $this->withoutVite();
-});
-
 function organizationAdministrator(): User
 {
     return User::factory()->create([
@@ -24,7 +20,9 @@ function organizationAdministrator(): User
 
 it('exposes organization administration only to administrators', function (): void {
     $administrator = organizationAdministrator();
+    $department = Department::factory()->create();
     $requester = User::factory()->create([
+        'department_id' => $department->id,
         'role' => UserRole::Requester,
     ]);
 
@@ -33,7 +31,7 @@ it('exposes organization administration only to administrators', function (): vo
         ->get(route('administration.departments.index'))
         ->assertOk()
         ->assertInertia(fn (Assert $page): Assert => $page
-            ->component('administration/departments/index', false)
+            ->component('administration/departments/index')
             ->where('auth.can.manageOrganization', true)
         );
 
@@ -57,6 +55,30 @@ it('exposes organization administration only to administrators', function (): vo
             'code' => 'FIN',
         ])
         ->assertForbidden();
+
+    $this
+        ->actingAs($requester)
+        ->put(route('administration.departments.update', [
+            'departmentId' => $department->id,
+        ]), [
+            'name' => 'Unauthorized update',
+            'code' => 'NOPE',
+            'manager_id' => null,
+        ])
+        ->assertForbidden();
+
+    $this
+        ->actingAs($requester)
+        ->put(route('administration.users.update', [
+            'userId' => $requester->id,
+        ]), [
+            'role' => UserRole::Administrator->value,
+            'department_id' => $department->id,
+        ])
+        ->assertForbidden();
+
+    expect($department->refresh()->name)->not->toBe('Unauthorized update')
+        ->and($requester->refresh()->role)->toBe(UserRole::Requester);
 });
 
 it('creates a normalized department and audit entry atomically', function (): void {
@@ -130,7 +152,7 @@ it('lists departments with server filters counts and manager candidates', functi
         ]))
         ->assertOk()
         ->assertInertia(fn (Assert $page): Assert => $page
-            ->component('administration/departments/index', false)
+            ->component('administration/departments/index')
             ->has('departments.data', 1)
             ->where('departments.data.0.id', $finance->id)
             ->where('departments.data.0.manager.id', $manager->id)
@@ -321,7 +343,7 @@ it('lists users with server-owned role and department filters', function (): voi
         ]))
         ->assertOk()
         ->assertInertia(fn (Assert $page): Assert => $page
-            ->component('administration/users/index', false)
+            ->component('administration/users/index')
             ->has('users.data', 1)
             ->where('users.data.0.id', $manager->id)
             ->where(
@@ -356,7 +378,7 @@ it('shows the administrator an immutable organization activity feed', function (
         ]))
         ->assertOk()
         ->assertInertia(fn (Assert $page): Assert => $page
-            ->component('administration/activity/index', false)
+            ->component('administration/activity/index')
             ->has('activities.data', 1)
             ->where(
                 'activities.data.0.action',

@@ -4,6 +4,7 @@ export {
     formatAdministrationCopy,
     getActivityActionLabel,
     getActivityFieldLabel,
+    getActivitySubjectTypeLabel,
     getAdministrationCopy,
     getOrganizationRoleLabel,
 } from './i18n';

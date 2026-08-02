@@ -1,7 +1,6 @@
 import { Form, Head, usePage } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
-import DeleteUser from '@/components/shared/delete-user';
 import Heading from '@/components/shared/heading';
 import InputError from '@/components/shared/input-error';
 import { Button } from '@/components/ui/button';
@@ -129,8 +128,6 @@ export default function Profile({
                     )}
                 </Form>
             </div>
-
-            <DeleteUser />
         </>
     );
 }

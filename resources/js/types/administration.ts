@@ -90,7 +90,7 @@ export type AdministrationUsersIndexProps = {
 };
 
 export type AdministrationUserUpdatePayload = {
-    role: string;
+    role: OrganizationRole;
     department_id: number | null;
 };
 

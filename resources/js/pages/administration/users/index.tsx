@@ -47,6 +47,7 @@ import type {
     AdministrationUserRow,
     AdministrationUserUpdatePayload,
     AdministrationUsersIndexProps,
+    OrganizationRole,
 } from '@/types/administration';
 
 const ALL = 'all';
@@ -354,148 +355,173 @@ export default function AdministrationUsersIndex({
                             </DialogDescription>
                         </DialogHeader>
 
-                        {editTarget &&
-                        editTarget.managedDepartments.length > 0 ? (
-                            <Alert variant="warning">
-                                <AlertTitle>{t.managedDepartments}</AlertTitle>
-                                <AlertDescription>
-                                    <p>{t.managedDepartmentsWarning}</p>
-                                    <p className="mt-1 text-xs">
-                                        {editTarget.managedDepartments
-                                            .map(
-                                                (department) =>
-                                                    `${department.name} (${department.code})`,
-                                            )
-                                            .join(' · ')}
+                        <form
+                            className="grid gap-4"
+                            onSubmit={(event) => {
+                                event.preventDefault();
+                                onUpdate();
+                            }}
+                        >
+                            {editTarget &&
+                            editTarget.managedDepartments.length > 0 ? (
+                                <Alert variant="warning">
+                                    <AlertTitle>
+                                        {t.managedDepartments}
+                                    </AlertTitle>
+                                    <AlertDescription>
+                                        <p>{t.managedDepartmentsWarning}</p>
+                                        <p className="mt-1 text-xs">
+                                            {editTarget.managedDepartments
+                                                .map(
+                                                    (department) =>
+                                                        `${department.name} (${department.code})`,
+                                                )
+                                                .join(' · ')}
+                                        </p>
+                                    </AlertDescription>
+                                </Alert>
+                            ) : null}
+
+                            {editForm.hasErrors ? (
+                                <Alert variant="destructive">
+                                    <AlertTitle>{t.validationTitle}</AlertTitle>
+                                    <AlertDescription>
+                                        {t.validationSummary}
+                                    </AlertDescription>
+                                </Alert>
+                            ) : null}
+
+                            <div className="grid gap-3">
+                                <div className="grid gap-1">
+                                    <p className="text-sm font-medium">
+                                        {editTarget?.name}
                                     </p>
-                                </AlertDescription>
-                            </Alert>
-                        ) : null}
+                                    <p className="text-xs text-muted-foreground">
+                                        {editTarget?.email}
+                                    </p>
+                                </div>
 
-                        {editForm.hasErrors ? (
-                            <Alert variant="destructive">
-                                <AlertTitle>{t.validationSummary}</AlertTitle>
-                                <AlertDescription>
-                                    {t.validationSummary}
-                                </AlertDescription>
-                            </Alert>
-                        ) : null}
-
-                        <div className="grid gap-3">
-                            <div className="grid gap-1">
-                                <p className="text-sm font-medium">
-                                    {editTarget?.name}
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                    {editTarget?.email}
-                                </p>
-                            </div>
-
-                            <div className="grid gap-2">
-                                <Label htmlFor="edit-role">{t.role}</Label>
-                                <Select
-                                    value={editForm.data.role}
-                                    onValueChange={(value) =>
-                                        editForm.setData('role', value)
-                                    }
-                                    disabled={editForm.processing}
-                                >
-                                    <SelectTrigger
-                                        id="edit-role"
-                                        className="w-full"
-                                        aria-invalid={Boolean(
-                                            editForm.errors.role,
-                                        )}
+                                <div className="grid gap-2">
+                                    <Label htmlFor="edit-role">{t.role}</Label>
+                                    <Select
+                                        value={editForm.data.role}
+                                        onValueChange={(value) =>
+                                            editForm.setData(
+                                                'role',
+                                                value as OrganizationRole,
+                                            )
+                                        }
+                                        disabled={editForm.processing}
                                     >
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {roleOptions.map((role) => (
-                                            <SelectItem key={role} value={role}>
-                                                {getOrganizationRoleLabel(
-                                                    role,
-                                                    locale,
-                                                )}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <InputError message={editForm.errors.role} />
-                            </div>
+                                        <SelectTrigger
+                                            id="edit-role"
+                                            className="w-full"
+                                            aria-invalid={Boolean(
+                                                editForm.errors.role,
+                                            )}
+                                            autoFocus
+                                        >
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {roleOptions.map((role) => (
+                                                <SelectItem
+                                                    key={role}
+                                                    value={role}
+                                                >
+                                                    {getOrganizationRoleLabel(
+                                                        role,
+                                                        locale,
+                                                    )}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError
+                                        message={editForm.errors.role}
+                                    />
+                                </div>
 
-                            <div className="grid gap-2">
-                                <Label htmlFor="edit-department">
-                                    {t.department}
-                                </Label>
-                                <Select
-                                    value={
-                                        editForm.data.department_id == null
-                                            ? NONE_DEPARTMENT
-                                            : String(
-                                                  editForm.data.department_id,
-                                              )
-                                    }
-                                    onValueChange={(value) =>
-                                        editForm.setData(
-                                            'department_id',
-                                            value === NONE_DEPARTMENT
-                                                ? null
-                                                : Number(value),
-                                        )
-                                    }
-                                    disabled={editForm.processing}
-                                >
-                                    <SelectTrigger
-                                        id="edit-department"
-                                        className="w-full"
-                                        aria-invalid={Boolean(
-                                            editForm.errors.department_id,
-                                        )}
+                                <div className="grid gap-2">
+                                    <Label htmlFor="edit-department">
+                                        {t.department}
+                                    </Label>
+                                    <Select
+                                        value={
+                                            editForm.data.department_id == null
+                                                ? NONE_DEPARTMENT
+                                                : String(
+                                                      editForm.data
+                                                          .department_id,
+                                                  )
+                                        }
+                                        onValueChange={(value) =>
+                                            editForm.setData(
+                                                'department_id',
+                                                value === NONE_DEPARTMENT
+                                                    ? null
+                                                    : Number(value),
+                                            )
+                                        }
+                                        disabled={editForm.processing}
                                     >
-                                        <SelectValue
-                                            placeholder={t.noDepartment}
-                                        />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value={NONE_DEPARTMENT}>
-                                            {t.noDepartment}
-                                        </SelectItem>
-                                        {departmentOptions.map((department) => (
-                                            <SelectItem
-                                                key={department.id}
-                                                value={String(department.id)}
-                                            >
-                                                {department.name} (
-                                                {department.code})
+                                        <SelectTrigger
+                                            id="edit-department"
+                                            className="w-full"
+                                            aria-invalid={Boolean(
+                                                editForm.errors.department_id,
+                                            )}
+                                        >
+                                            <SelectValue
+                                                placeholder={t.noDepartment}
+                                            />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value={NONE_DEPARTMENT}>
+                                                {t.noDepartment}
                                             </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                                <InputError
-                                    message={editForm.errors.department_id}
-                                />
+                                            {departmentOptions.map(
+                                                (department) => (
+                                                    <SelectItem
+                                                        key={department.id}
+                                                        value={String(
+                                                            department.id,
+                                                        )}
+                                                    >
+                                                        {department.name} (
+                                                        {department.code})
+                                                    </SelectItem>
+                                                ),
+                                            )}
+                                        </SelectContent>
+                                    </Select>
+                                    <InputError
+                                        message={editForm.errors.department_id}
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        <DialogFooter>
-                            <DialogClose asChild>
+                            <DialogFooter>
+                                <DialogClose asChild>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        disabled={editForm.processing}
+                                    >
+                                        {t.cancel}
+                                    </Button>
+                                </DialogClose>
                                 <Button
-                                    type="button"
-                                    variant="outline"
+                                    type="submit"
                                     disabled={editForm.processing}
                                 >
-                                    {t.cancel}
+                                    {editForm.processing ? <Spinner /> : null}
+                                    {editForm.processing
+                                        ? t.processing
+                                        : t.save}
                                 </Button>
-                            </DialogClose>
-                            <Button
-                                type="button"
-                                onClick={onUpdate}
-                                disabled={editForm.processing}
-                            >
-                                {editForm.processing ? <Spinner /> : null}
-                                {editForm.processing ? t.processing : t.save}
-                            </Button>
-                        </DialogFooter>
+                            </DialogFooter>
+                        </form>
                     </DialogContent>
                 </Dialog>
             </div>

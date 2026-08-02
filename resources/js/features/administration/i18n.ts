@@ -1,5 +1,6 @@
 import type {
     AdministrationActivityAction,
+    AdministrationSubjectType,
     OrganizationRole,
 } from '@/types/administration';
 import type { AppLocale } from '@/types/locale';
@@ -15,7 +16,7 @@ export const administrationCopy = {
         departmentsDescription:
             'إدارة الأقسام وتعيين المديرين المؤهلين من نفس القسم.',
         usersTitle: 'المستخدمون',
-        usersDescription: 'تعيين الأدوار والأقسام. القواعد تُطبَّق على الخادم.',
+        usersDescription: 'تنظيم المسؤوليات وصلاحيات الوصول حسب الدور والقسم.',
         activityTitle: 'سجل النشاط الإداري',
         activityDescription: 'تتبع تغييرات الأقسام وتعيينات المستخدمين.',
         search: 'بحث',
@@ -32,6 +33,7 @@ export const administrationCopy = {
         save: 'حفظ',
         cancel: 'إلغاء',
         processing: 'جارٍ المعالجة…',
+        validationTitle: 'تعذر حفظ التغييرات',
         validationSummary: 'يرجى مراجعة الحقول المحددة.',
         name: 'الاسم',
         code: 'الرمز',
@@ -47,7 +49,7 @@ export const administrationCopy = {
         editDepartmentDescription:
             'حدّث بيانات القسم أو عيّن مديرًا من المرشحين المؤهلين فقط.',
         managerCandidatesHint:
-            'قائمة المرشحين قادمة من الخادم (مستخدمو دور المدير في نفس القسم).',
+            'تظهر هنا حسابات المديرين المنتمين إلى هذا القسم فقط.',
         emptyDepartmentsTitle: 'لا توجد أقسام',
         emptyDepartmentsDescription: 'أنشئ قسمًا للبدء.',
         email: 'البريد',
@@ -58,10 +60,11 @@ export const administrationCopy = {
         noDepartment: 'بدون قسم',
         managedDepartments: 'أقسام يديرها',
         managedDepartmentsWarning:
-            'هذا المستخدم يدير أقسامًا. تغيير الدور/القسم قد يُرفض من الخادم إن بقيت الإدارة.',
+            'أعِد تعيين الأقسام التي يديرها هذا المستخدم قبل تغيير دوره أو قسمه.',
         assignUser: 'تعيين',
         assignUserTitle: 'تعيين المستخدم',
-        assignUserDescription: 'حدّث الدور والقسم. التحقق يتم على الخادم.',
+        assignUserDescription:
+            'اختر دور المستخدم والقسم الذي ينتمي إليه داخل المؤسسة.',
         emptyUsersTitle: 'لا يوجد مستخدمون',
         emptyUsersDescription: 'لا توجد نتائج مطابقة لعوامل التصفية.',
         action: 'الإجراء',
@@ -87,6 +90,8 @@ export const administrationCopy = {
         fieldManagerId: 'المدير',
         fieldRole: 'الدور',
         fieldDepartmentId: 'القسم',
+        subjectDepartment: 'قسم',
+        subjectUser: 'مستخدم',
     },
     en: {
         navTitle: 'Administration',
@@ -99,7 +104,7 @@ export const administrationCopy = {
             'Manage departments and assign eligible same-department managers.',
         usersTitle: 'Users',
         usersDescription:
-            'Assign roles and departments. Server rules remain authoritative.',
+            'Organize responsibilities and access by role and department.',
         activityTitle: 'Administration activity',
         activityDescription:
             'Track department changes and user assignment updates.',
@@ -117,6 +122,7 @@ export const administrationCopy = {
         save: 'Save',
         cancel: 'Cancel',
         processing: 'Processing…',
+        validationTitle: 'Unable to save changes',
         validationSummary: 'Please review the highlighted fields.',
         name: 'Name',
         code: 'Code',
@@ -130,9 +136,9 @@ export const administrationCopy = {
         createDepartmentDescription: 'Enter the department name and code.',
         editDepartmentTitle: 'Edit department',
         editDepartmentDescription:
-            'Update department details or assign a manager from server-provided candidates only.',
+            'Update department details or assign an eligible manager.',
         managerCandidatesHint:
-            'Candidates come from the server (manager-role users in the same department).',
+            'Only manager accounts belonging to this department are available.',
         emptyDepartmentsTitle: 'No departments',
         emptyDepartmentsDescription: 'Create a department to get started.',
         email: 'Email',
@@ -143,11 +149,11 @@ export const administrationCopy = {
         noDepartment: 'No department',
         managedDepartments: 'Manages',
         managedDepartmentsWarning:
-            'This user manages departments. Role/department changes may be rejected by the server while management remains assigned.',
+            'Reassign this user’s managed departments before changing their role or department.',
         assignUser: 'Assign',
         assignUserTitle: 'Assign user',
         assignUserDescription:
-            'Update role and department. Validation is enforced by the server.',
+            'Choose the user’s role and organization membership.',
         emptyUsersTitle: 'No users',
         emptyUsersDescription: 'No results match the current filters.',
         action: 'Action',
@@ -173,6 +179,8 @@ export const administrationCopy = {
         fieldManagerId: 'Manager',
         fieldRole: 'Role',
         fieldDepartmentId: 'Department',
+        subjectDepartment: 'Department',
+        subjectUser: 'User',
     },
 } as const;
 
@@ -243,13 +251,31 @@ export function getActivityFieldLabel(
             return t.fieldName;
         case 'code':
             return t.fieldCode;
+        case 'manager':
         case 'manager_id':
             return t.fieldManagerId;
         case 'role':
             return t.fieldRole;
+        case 'department':
         case 'department_id':
             return t.fieldDepartmentId;
         default:
             return field;
+    }
+}
+
+export function getActivitySubjectTypeLabel(
+    subjectType: AdministrationSubjectType | string,
+    locale: AppLocale,
+): string {
+    const t = getAdministrationCopy(locale);
+
+    switch (subjectType) {
+        case 'department':
+            return t.subjectDepartment;
+        case 'user':
+            return t.subjectUser;
+        default:
+            return subjectType;
     }
 }

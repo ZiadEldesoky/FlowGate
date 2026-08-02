@@ -27,6 +27,7 @@ import {
     administrationRoutes,
     getActivityActionLabel,
     getActivityFieldLabel,
+    getActivitySubjectTypeLabel,
     getAdministrationCopy,
     getOrganizationRoleLabel,
 } from '@/features/administration';
@@ -89,8 +90,10 @@ function ChangesList({
                             locale,
                             emptyLabel,
                         )}
-                    </span>{' '}
-                    →{' '}
+                    </span>
+                    <span className="mx-1" aria-hidden>
+                        ·
+                    </span>
                     <span>
                         {toLabel}{' '}
                         {formatChangeValue(
@@ -272,8 +275,11 @@ export default function AdministrationActivityIndex({
                                             <TableCell className="max-w-[14rem] whitespace-normal">
                                                 <p>{row.subjectLabel}</p>
                                                 <p className="text-xs text-muted-foreground">
-                                                    {row.subjectType} #
-                                                    {row.subjectId}
+                                                    {getActivitySubjectTypeLabel(
+                                                        row.subjectType,
+                                                        locale,
+                                                    )}{' '}
+                                                    #{row.subjectId}
                                                 </p>
                                             </TableCell>
                                             <TableCell className="max-w-[22rem] whitespace-normal">

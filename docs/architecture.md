@@ -236,6 +236,45 @@ The notification inbox is a read model composed by
 unread count is a navigation hint only and never grants access to a
 notification.
 
+## Organization administration boundary
+
+Organization administration is available only when the authenticated user's
+Policies allow it. The shared `auth.can.manageOrganization` value controls
+navigation visibility, but every route and mutation authorizes again on the
+server.
+
+The module exposes three focused read models:
+
+- `DepartmentsIndexQuery` owns department search, pagination, aggregate counts,
+  the current manager, and server-qualified manager candidates.
+- `OrganizationUsersIndexQuery` owns user search, role and department filters,
+  organization assignments, and managed-department context.
+- `OrganizationActivityIndexQuery` owns the append-only administrative audit
+  feed and its filters.
+
+Mutations use explicit Actions and database transactions:
+
+- `CreateDepartment` normalizes and creates an unassigned department.
+- `UpdateDepartment` changes its identity or assigns a manager.
+- `UpdateUserOrganizationAssignment` changes a user's role or department.
+
+The following invariants are rechecked while the affected rows are locked:
+
+- a department manager must have the manager role and belong to that department;
+- a manager's role or department cannot change while they still manage a
+  department;
+- the final administrator cannot be demoted;
+- manager-role users must belong to a department;
+- department codes remain unique and are stored in uppercase.
+
+Each successful mutation writes an `OrganizationActivityLog` in the same
+transaction. The entry records the actor, action, stable subject label, and only
+the fields that changed. Failed validation or failed persistence therefore
+produces neither a partial organization update nor an audit entry. Destructive
+department or user operations are deliberately absent from this phase so
+procurement and audit history cannot be orphaned. The starter-kit self-service
+account deletion entry point is hidden and policy-denied for the same reason.
+
 ## Deliberate omissions
 
 - No microservices or message broker: there is no deployment or scaling evidence
