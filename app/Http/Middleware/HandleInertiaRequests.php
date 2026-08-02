@@ -47,6 +47,9 @@ class HandleInertiaRequests extends Middleware
             'name' => config('app.name'),
             'auth' => [
                 'user' => $user,
+                'unreadNotificationsCount' => $user instanceof User
+                    ? $user->unreadNotifications()->count()
+                    : 0,
                 'can' => [
                     'viewApprovalQueue' => $user instanceof User
                         && Gate::forUser($user)->allows(

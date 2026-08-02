@@ -53,6 +53,7 @@ final readonly class PurchaseRequestDetailsQuery
      *             action: string,
      *             fromStatus: string|null,
      *             toStatus: string,
+     *             comment: string|null,
      *             createdAt: string,
      *             actor: array{id: int, name: string}|null
      *         }>
@@ -109,6 +110,9 @@ final readonly class PurchaseRequestDetailsQuery
                 'action' => $log->action->value,
                 'fromStatus' => $log->from_status?->value,
                 'toStatus' => $log->to_status->value,
+                'comment' => is_string($log->metadata['comment'] ?? null)
+                    ? $log->metadata['comment']
+                    : null,
                 'createdAt' => $log->created_at?->toAtomString() ?? '',
                 'actor' => $log->actor === null
                     ? null

@@ -220,6 +220,18 @@ components from `features/purchase-requests`.
 - Dates, money, workflow statuses, activities, and validation feedback use the
   active locale
 
+## Lifecycle actions and notifications
+
+- Completion and cancellation controls render only from exact backend
+  `allowedActions`; client role checks are forbidden.
+- Terminal transitions require confirmation dialogs. Cancellation accepts an
+  optional reason and renders server validation without storing domain state in
+  the component.
+- The notification inbox is a compact operational table with read state,
+  localized transition copy, request links, and server-driven pagination.
+- The sidebar unread badge comes from the shared server prop. Mark-read actions
+  update the server and never optimistically invent an authoritative count.
+
 ## Usage guidance
 
 1. Build pages from primitives and feature components, not one-off utility soup

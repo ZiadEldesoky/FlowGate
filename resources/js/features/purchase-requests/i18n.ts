@@ -50,6 +50,19 @@ export const purchaseRequestCopy = {
         confirmSubmitDescription:
             'سينتقل الطلب إلى مراجعة المدير ولن يعود متاحًا للتعديل بعد الإرسال.',
         confirmSubmitAction: 'تأكيد الإرسال',
+        completeRequest: 'إكمال الطلب',
+        completeRequestTitle: 'إكمال طلب الشراء؟',
+        completeRequestDescription:
+            'سيُسجَّل الطلب كمكتمل، وهذه حالة نهائية لا يمكن التراجع عنها.',
+        confirmCompleteAction: 'تأكيد الإكمال',
+        cancelRequest: 'إلغاء الطلب',
+        cancelRequestTitle: 'إلغاء طلب الشراء؟',
+        cancelRequestDescription:
+            'سيُغلق الطلب كملغى، وهذه حالة نهائية لا يمكن التراجع عنها.',
+        cancellationReasonOptional: 'سبب الإلغاء (اختياري)',
+        cancellationReasonPlaceholder: 'أضف سببًا مختصرًا للإلغاء…',
+        confirmCancellationAction: 'تأكيد الإلغاء',
+        lifecycleValidationSummary: 'يرجى مراجعة سبب الإلغاء.',
         edit: 'تعديل',
         backToList: 'العودة للقائمة',
         processing: 'جارٍ المعالجة…',
@@ -128,6 +141,19 @@ export const purchaseRequestCopy = {
         confirmSubmitDescription:
             'The request will move to manager review and can no longer be edited after submission.',
         confirmSubmitAction: 'Confirm submission',
+        completeRequest: 'Complete request',
+        completeRequestTitle: 'Complete this purchase request?',
+        completeRequestDescription:
+            'The request will be recorded as completed. This terminal state cannot be reversed.',
+        confirmCompleteAction: 'Confirm completion',
+        cancelRequest: 'Cancel request',
+        cancelRequestTitle: 'Cancel this purchase request?',
+        cancelRequestDescription:
+            'The request will be closed as cancelled. This terminal state cannot be reversed.',
+        cancellationReasonOptional: 'Cancellation reason (optional)',
+        cancellationReasonPlaceholder: 'Add a brief cancellation reason…',
+        confirmCancellationAction: 'Confirm cancellation',
+        lifecycleValidationSummary: 'Please review the cancellation reason.',
         edit: 'Edit',
         backToList: 'Back to list',
         processing: 'Processing…',

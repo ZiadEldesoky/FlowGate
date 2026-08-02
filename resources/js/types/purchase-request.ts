@@ -140,6 +140,7 @@ export type PurchaseRequestActivity = {
     action: string;
     fromStatus: string | null;
     toStatus: string;
+    comment: string | null;
     createdAt: string;
     actor: {
         id: number;

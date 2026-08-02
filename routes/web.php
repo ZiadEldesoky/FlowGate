@@ -1,6 +1,11 @@
 <?php
 
 use App\Http\Controllers\ApprovalQueueController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\NotificationReadAllController;
+use App\Http\Controllers\NotificationReadController;
+use App\Http\Controllers\PurchaseRequestCancellationController;
+use App\Http\Controllers\PurchaseRequestCompletionController;
 use App\Http\Controllers\PurchaseRequestController;
 use App\Http\Controllers\PurchaseRequestManagerApprovalController;
 use App\Http\Controllers\PurchaseRequestProcurementApprovalController;
@@ -17,6 +22,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('approvals', ApprovalQueueController::class)
         ->middleware('can:viewApprovalQueue,App\\Models\\PurchaseRequest')
         ->name('approvals.index');
+
+    Route::get('notifications', NotificationController::class)
+        ->name('notifications.index');
+
+    Route::patch(
+        'notifications/read-all',
+        NotificationReadAllController::class,
+    )->name('notifications.read-all');
+
+    Route::patch(
+        'notifications/{notificationId}/read',
+        NotificationReadController::class,
+    )
+        ->whereUuid('notificationId')
+        ->name('notifications.read');
 
     Route::get(
         'purchase-requests',
@@ -87,6 +107,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     )
         ->whereNumber('purchaseRequestId')
         ->name('purchase-requests.reject');
+
+    Route::post(
+        'purchase-requests/{purchaseRequestId}/complete',
+        PurchaseRequestCompletionController::class,
+    )
+        ->whereNumber('purchaseRequestId')
+        ->name('purchase-requests.complete');
+
+    Route::post(
+        'purchase-requests/{purchaseRequestId}/cancel',
+        PurchaseRequestCancellationController::class,
+    )
+        ->whereNumber('purchaseRequestId')
+        ->name('purchase-requests.cancel');
 });
 
 require __DIR__.'/settings.php';

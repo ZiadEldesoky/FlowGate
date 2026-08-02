@@ -20,6 +20,7 @@ import {
     RequestApprovalsSection,
     RequestItemsSection,
     RequestSummarySection,
+    LifecycleDialogs,
     getPurchaseRequestCopy,
     purchaseRequestRoutes,
 } from '@/features/purchase-requests';
@@ -130,6 +131,11 @@ export default function PurchaseRequestsShow({
                                 </Dialog>
                             ) : null}
                             <DecisionDialogs
+                                purchaseRequestId={purchaseRequest.id}
+                                allowedActions={allowedActions}
+                                locale={locale}
+                            />
+                            <LifecycleDialogs
                                 purchaseRequestId={purchaseRequest.id}
                                 allowedActions={allowedActions}
                                 locale={locale}
