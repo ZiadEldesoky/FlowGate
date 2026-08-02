@@ -45,7 +45,7 @@ it('shows a designated manager only their pending manager reviews', function ():
         ->get(route('approvals.index'))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page): AssertableInertia => $page
-            ->component('approvals/index', false)
+            ->component('approvals/index')
             ->where('stage', 'manager_review')
             ->has('reviews.data', 1)
             ->where('reviews.data.0.id', $visible->id)
@@ -83,7 +83,7 @@ it('shows procurement pending procurement reviews across departments', function 
         ->get(route('approvals.index', ['search' => '  Matching  ']))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page): AssertableInertia => $page
-            ->component('approvals/index', false)
+            ->component('approvals/index')
             ->where('stage', 'procurement_review')
             ->where('filters.search', 'Matching')
             ->has('reviews.data', 2)
@@ -104,7 +104,7 @@ it('allows administrators to use the procurement review queue', function (): voi
         ->get(route('approvals.index'))
         ->assertOk()
         ->assertInertia(fn (AssertableInertia $page): AssertableInertia => $page
-            ->component('approvals/index', false)
+            ->component('approvals/index')
             ->where('stage', 'procurement_review')
             ->has('reviews.data', 1)
         );
