@@ -1,10 +1,10 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import {
     ArrowRight,
-    Database,
-    GitBranch,
-    Languages,
-    ShieldCheck,
+    BellRing,
+    ClipboardList,
+    History,
+    UserRoundCheck,
 } from 'lucide-react';
 import AppLogoIcon from '@/components/layout/app-logo-icon';
 import { LocaleSwitcher } from '@/components/layout/locale-switcher';
@@ -16,91 +16,92 @@ import { dashboard, login, register } from '@/routes';
 
 const copy = {
     ar: {
-        eyebrow: 'Laravel Modular Monolith',
-        title: 'موافقات المشتريات بمسار واضح وقابل للتدقيق',
+        eyebrow: 'إدارة موافقات المشتريات',
+        title: 'طلبات شراء أوضح، قرارات أسرع، ومسؤوليات قابلة للتتبّع',
         description:
-            'FlowGate مشروع عملي يوضح بناء workflow مؤسسي باستخدام Laravel، مع صلاحيات مركزية وانتقالات حالة ذرية وسجل نشاط موثوق.',
+            'يجمع FlowGate طلبات الشراء والمراجعات والقرارات في مسار واحد، حتى يعرف كل طرف ما ينتظره، وما تم اعتماده، ومن اتخذ القرار.',
         openDashboard: 'فتح لوحة المتابعة',
         signIn: 'تسجيل الدخول',
-        createAccount: 'إنشاء حساب تجريبي',
-        engineeringTitle: 'ما الذي يوضحه المشروع؟',
-        engineeringDescription:
-            'حدود معمارية مباشرة تحافظ على منطق الأعمال في الخادم بدون طبقات شكلية.',
+        createAccount: 'إنشاء حساب',
+        solutionTitle: 'ما المشكلة التي يحلها FlowGate؟',
+        solutionDescription:
+            'بدلاً من ضياع الطلبات بين الرسائل والجداول، تصبح كل خطوة واضحة، مملوكة لصاحبها، وقابلة للمراجعة.',
         points: [
             {
-                title: 'Workflow واحد',
+                title: 'طلبات في مكان واحد',
                 description:
-                    'مصدر وحيد لقواعد انتقال الحالات مع اختبارات matrix واضحة.',
-                icon: GitBranch,
+                    'تظهر بيانات كل طلب ومرجعه ومقدّمه وقيمته وحالته الحالية في سجل واحد يسهل الرجوع إليه.',
+                icon: ClipboardList,
             },
             {
-                title: 'صلاحيات مركزية',
+                title: 'مسؤولية واضحة',
                 description:
-                    'Laravel Policies هي الحد الوحيد لقرارات الوصول والتنفيذ.',
-                icon: ShieldCheck,
+                    'ينتقل الطلب بين المدير والمشتريات حسب مرحلته، ويظهر الإجراء المطلوب للمسؤول المناسب.',
+                icon: UserRoundCheck,
             },
             {
-                title: 'كتابة ذرية',
+                title: 'قرارات قابلة للتدقيق',
                 description:
-                    'الحالة والموافقة وسجل النشاط تُحفظ داخل transaction واحدة.',
-                icon: Database,
+                    'يُحفظ كل اعتماد أو رفض أو إلغاء مع صاحبه ووقته والملاحظات المرتبطة به.',
+                icon: History,
             },
             {
-                title: 'واجهة ثنائية الاتجاه',
-                description: 'نفس المكونات تعمل بالعربية RTL والإنجليزية LTR.',
-                icon: Languages,
+                title: 'تنبيهات في الوقت المناسب',
+                description:
+                    'يصل أصحاب العلاقة إشعار عندما يصبح الطلب بحاجة إلى قرار أو تتغير حالته.',
+                icon: BellRing,
             },
         ],
-        statusTitle: 'لغة حالات موحّدة',
+        statusTitle: 'حالة واضحة لكل طلب',
         statusDescription:
-            'الألوان للعرض فقط؛ الخادم يظل مصدر الحقيقة للـworkflow.',
-        repository: 'الكود على GitHub',
-        quality:
-            'Pest · Architecture Tests · Larastan · Pint · TypeScript · GitHub Actions',
+            'من المسودة حتى الاعتماد أو الإكمال، تظهر الحالة الحالية والخطوة التالية بوضوح.',
+        valueLine: 'طلبات مركزية · مراجعات واضحة · سجل قرارات موثوق',
+        footerTagline: 'نظّم الطلبات، وضّح المسؤولية، واحتفظ بسجل القرار.',
     },
     en: {
-        eyebrow: 'Laravel Modular Monolith',
-        title: 'Procurement approvals with an explicit, auditable flow',
+        eyebrow: 'Procurement approval management',
+        title: 'Clearer purchase requests, faster decisions, and accountable ownership',
         description:
-            'FlowGate is a practical Laravel project demonstrating an enterprise workflow with centralized authorization, atomic state transitions, and reliable activity history.',
+            'FlowGate brings purchase requests, reviews, and decisions into one workflow, so every stakeholder knows what is waiting, what was approved, and who made the decision.',
         openDashboard: 'Open dashboard',
         signIn: 'Sign in',
-        createAccount: 'Create demo account',
-        engineeringTitle: 'What does the project demonstrate?',
-        engineeringDescription:
-            'Direct architectural boundaries that keep business behavior on the server without ceremonial layers.',
+        createAccount: 'Create account',
+        solutionTitle: 'What problem does FlowGate solve?',
+        solutionDescription:
+            'Instead of losing requests across messages and spreadsheets, every step becomes visible, owned, and reviewable.',
         points: [
             {
-                title: 'One workflow',
+                title: 'Requests in one place',
                 description:
-                    'A single transition source backed by an explicit matrix test suite.',
-                icon: GitBranch,
+                    'Every request keeps its reference, requester, amount, and current status in one record that is easy to revisit.',
+                icon: ClipboardList,
             },
             {
-                title: 'Central authorization',
+                title: 'Clear ownership',
                 description:
-                    'Laravel Policies are the only boundary for access decisions.',
-                icon: ShieldCheck,
+                    'Requests move between manager and procurement review by stage, with the required action shown to the right person.',
+                icon: UserRoundCheck,
             },
             {
-                title: 'Atomic writes',
+                title: 'Auditable decisions',
                 description:
-                    'Status, approval, and activity history commit in one transaction.',
-                icon: Database,
+                    'Every approval, rejection, or cancellation is recorded with its actor, time, and supporting notes.',
+                icon: History,
             },
             {
-                title: 'Bidirectional UI',
+                title: 'Timely notifications',
                 description:
-                    'The same components support Arabic RTL and English LTR.',
-                icon: Languages,
+                    'Relevant people are notified when a request needs a decision or its status changes.',
+                icon: BellRing,
             },
         ],
-        statusTitle: 'Consistent status language',
+        statusTitle: 'A clear status for every request',
         statusDescription:
-            'Colors are presentation-only; the server remains the workflow source of truth.',
-        repository: 'Source on GitHub',
-        quality:
-            'Pest · Architecture Tests · Larastan · Pint · TypeScript · GitHub Actions',
+            'From draft through approval or completion, the current status and next step remain easy to understand.',
+        valueLine:
+            'Centralized requests · Clear reviews · Reliable decision history',
+        footerTagline:
+            'Organize requests, clarify ownership, and preserve every decision.',
     },
 } as const;
 
@@ -179,17 +180,17 @@ export default function Welcome() {
                                 ) : null}
                             </div>
                             <p className="text-xs leading-5 text-muted-foreground">
-                                {t.quality}
+                                {t.valueLine}
                             </p>
                         </div>
 
                         <div className="rounded-lg border bg-card">
                             <div className="border-b px-5 py-4">
                                 <h2 className="text-base font-semibold">
-                                    {t.engineeringTitle}
+                                    {t.solutionTitle}
                                 </h2>
                                 <p className="mt-1 text-sm text-muted-foreground">
-                                    {t.engineeringDescription}
+                                    {t.solutionDescription}
                                 </p>
                             </div>
                             <ul className="divide-y">
@@ -249,14 +250,7 @@ export default function Welcome() {
                 <footer className="border-t">
                     <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-5 text-xs text-muted-foreground sm:px-6">
                         <span>© 2026 {name}</span>
-                        <a
-                            href="https://github.com/ZiadEldesoky/FlowGate"
-                            target="_blank"
-                            rel="noreferrer"
-                            className="font-medium text-foreground underline-offset-4 hover:underline"
-                        >
-                            {t.repository}
-                        </a>
+                        <span>{t.footerTagline}</span>
                     </div>
                 </footer>
             </div>
