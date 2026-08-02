@@ -2,6 +2,7 @@ import { Link, usePage } from '@inertiajs/react';
 import {
     Bell,
     CheckSquare,
+    FileBarChart2,
     LayoutGrid,
     Settings2,
     ShoppingCart,
@@ -22,6 +23,7 @@ import { administrationRoutes } from '@/features/administration';
 import { approvalRoutes } from '@/features/approvals';
 import { notificationRoutes } from '@/features/notifications';
 import { purchaseRequestRoutes } from '@/features/purchase-requests';
+import { reportRoutes } from '@/features/reports';
 import { useDirection } from '@/hooks/use-direction';
 import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
@@ -31,6 +33,7 @@ export function AppSidebar() {
     const { auth } = usePage().props;
     const canViewApprovals = auth.can.viewApprovalQueue;
     const canManageOrganization = auth.can.manageOrganization;
+    const canViewProcurementReports = auth.can.viewProcurementReports;
     const unreadNotificationsCount = auth.unreadNotificationsCount;
 
     const mainNavItems: NavItem[] = [
@@ -50,6 +53,15 @@ export function AppSidebar() {
                       title: locale === 'ar' ? 'الموافقات' : 'Approvals',
                       href: approvalRoutes.index(),
                       icon: CheckSquare,
+                  } satisfies NavItem,
+              ]
+            : []),
+        ...(canViewProcurementReports
+            ? [
+                  {
+                      title: locale === 'ar' ? 'التقارير' : 'Reports',
+                      href: reportRoutes.procurement.index(),
+                      icon: FileBarChart2,
                   } satisfies NavItem,
               ]
             : []),

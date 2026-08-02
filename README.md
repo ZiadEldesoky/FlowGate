@@ -18,6 +18,9 @@ workflow rules on the server and records every state change atomically.
 - After-commit, role-aware database notifications with a user-scoped inbox.
 - Administrator-only department, manager, role, and membership management.
 - Atomic organization audit entries for every administrative assignment change.
+- Role-aware operational dashboards with server-owned workflow metrics.
+- Policy-scoped procurement reports with bounded filters and streaming CSV
+  export.
 - Events dispatched only after the surrounding database transaction commits.
 - Eloquent models limited to relationships, casts, and query scopes.
 - Arabic RTL and English LTR from one component system.

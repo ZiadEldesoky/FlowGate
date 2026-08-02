@@ -52,6 +52,14 @@ const breadcrumbLabels: Readonly<
         ar: 'سجل النشاط',
         en: 'Activity',
     },
+    Reports: {
+        ar: 'التقارير',
+        en: 'Reports',
+    },
+    Procurement: {
+        ar: 'المشتريات',
+        en: 'Procurement',
+    },
 };
 
 export function localizeBreadcrumbs(

@@ -53,6 +53,16 @@ final readonly class PurchaseRequestPolicy
         return $this->isProcurement($user) || $this->isAdministrator($user);
     }
 
+    public function viewReports(User $user): bool
+    {
+        return $this->isProcurement($user)
+            || $this->isAdministrator($user)
+            || (
+                $user->role === UserRole::Manager
+                && $user->managedDepartments()->exists()
+            );
+    }
+
     public function update(User $user, PurchaseRequest $purchaseRequest): bool
     {
         return $purchaseRequest->requester_id === $user->id

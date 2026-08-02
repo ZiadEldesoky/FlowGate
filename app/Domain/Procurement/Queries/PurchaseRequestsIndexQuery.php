@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Procurement\Queries;
 
-use App\Domain\Organization\Enums\UserRole;
 use App\Domain\Procurement\Enums\PurchaseRequestStatus;
 use App\Models\PurchaseRequest;
 use App\Models\User;
@@ -15,6 +14,8 @@ final readonly class PurchaseRequestsIndexQuery
 {
     public function __construct(
         private Gate $gate,
+        private VisiblePurchaseRequestsQuery $visiblePurchaseRequests,
+        private PurchaseRequestListItemQuery $listItem,
     ) {}
 
     /**
@@ -54,13 +55,13 @@ final readonly class PurchaseRequestsIndexQuery
      */
     public function for(User $user, array $filters): array
     {
-        $query = PurchaseRequest::query()
+        $query = $this->visiblePurchaseRequests
+            ->for($user)
             ->with([
                 'requester:id,name',
                 'department:id,name,code',
             ]);
 
-        $this->applyVisibility($query, $user);
         $this->applyFilters($query, $filters);
 
         $paginator = $query
@@ -74,26 +75,7 @@ final readonly class PurchaseRequestsIndexQuery
         $rows = [];
 
         foreach ($paginator->items() as $purchaseRequest) {
-            $rows[] = [
-                'id' => $purchaseRequest->id,
-                'reference' => $purchaseRequest->reference,
-                'title' => $purchaseRequest->title,
-                'requester' => [
-                    'id' => $purchaseRequest->requester->id,
-                    'name' => $purchaseRequest->requester->name,
-                ],
-                'department' => [
-                    'id' => $purchaseRequest->department->id,
-                    'name' => $purchaseRequest->department->name,
-                    'code' => $purchaseRequest->department->code,
-                ],
-                'status' => $purchaseRequest->status->value,
-                'currency' => $purchaseRequest->currency,
-                'totalAmount' => $purchaseRequest->total_amount,
-                'neededBy' => $purchaseRequest->needed_by?->toDateString(),
-                'submittedAt' => $purchaseRequest->submitted_at?->toAtomString(),
-                'createdAt' => $purchaseRequest->created_at?->toAtomString() ?? '',
-            ];
+            $rows[] = $this->listItem->from($purchaseRequest);
         }
 
         return [
@@ -125,28 +107,6 @@ final readonly class PurchaseRequestsIndexQuery
                     ->allows('create', PurchaseRequest::class),
             ],
         ];
-    }
-
-    /**
-     * @param  Builder<PurchaseRequest>  $query
-     */
-    private function applyVisibility(Builder $query, User $user): void
-    {
-        match ($user->role) {
-            UserRole::Requester => $query->where(
-                'requester_id',
-                $user->id,
-            ),
-            UserRole::Manager => $query->whereHas(
-                'department',
-                fn (Builder $department): Builder => $department->where(
-                    'manager_id',
-                    $user->id,
-                ),
-            ),
-            UserRole::Procurement,
-            UserRole::Administrator => null,
-        };
     }
 
     /**

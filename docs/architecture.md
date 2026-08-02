@@ -275,6 +275,37 @@ department or user operations are deliberately absent from this phase so
 procurement and audit history cannot be orphaned. The starter-kit self-service
 account deletion entry point is hidden and policy-denied for the same reason.
 
+## Operational reporting boundary
+
+The dashboard and procurement report are server-owned read models. They do not
+reimplement workflow or authorization in React:
+
+- `VisiblePurchaseRequestsQuery` is the shared source of role-aware data scope.
+  Requesters receive their own requests, designated managers receive requests
+  from departments they manage, and procurement or administrator users receive
+  the organization-wide scope.
+- `DashboardQuery` composes counts, committed value, status distribution,
+  action-required rows, and recent requests from that scope. Drafts require
+  requester action, manager-review rows require designated-manager action, and
+  procurement-review or approved rows require procurement/administrator
+  action.
+- `PurchaseRequestPolicy::viewReports` is the only authorization source for the
+  report routes and the shared report-navigation hint. Requesters cannot access
+  operational reports.
+- `ProcurementReportQuery` applies the same scope to a validated maximum
+  366-day period, optional status, and optional department. It calculates
+  summary metrics, status and department breakdowns, a monthly trend, and the
+  paginated detail read model on the server.
+- `ExportProcurementReport` streams the same filtered Query Object to UTF-8 CSV
+  in bounded chunks. Export therefore cannot broaden the browser-visible scope
+  and does not load the entire result set into memory.
+
+The display-only `scope` key and shared `auth.can.viewProcurementReports`
+boolean help React choose wording and navigation. Neither grants access; report
+routes authorize again and all report totals are recalculated from persisted
+`DECIMAL` values. Reporting access paths are indexed by creation time and by
+department plus creation time.
+
 ## Deliberate omissions
 
 - No microservices or message broker: there is no deployment or scaling evidence
