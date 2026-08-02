@@ -28,7 +28,65 @@ final readonly class ProcurementReportQuery
      *     department_id: int|null,
      *     page: int
      * }  $filters
-     * @return array<string, mixed>
+     * @return array{
+     *     scope: string,
+     *     filters: array{
+     *         from: string,
+     *         to: string,
+     *         status: string|null,
+     *         departmentId: int|null
+     *     },
+     *     filterOptions: array{
+     *         statuses: list<string>,
+     *         departments: list<array{id: int, name: string, code: string}>
+     *     },
+     *     summary: array{
+     *         requestCount: int,
+     *         totalAmount: string,
+     *         averageAmount: string,
+     *         completedCount: int,
+     *         completionRate: string,
+     *         currency: string
+     *     },
+     *     statusBreakdown: list<array{
+     *         status: string,
+     *         requestCount: int,
+     *         totalAmount: string
+     *     }>,
+     *     departmentBreakdown: list<array{
+     *         department: array{id: int, name: string, code: string},
+     *         requestCount: int,
+     *         totalAmount: string
+     *     }>,
+     *     monthlyTrend: list<array{
+     *         month: string,
+     *         requestCount: int,
+     *         totalAmount: string
+     *     }>,
+     *     purchaseRequests: array{
+     *         data: list<array{
+     *             id: int,
+     *             reference: string,
+     *             title: string,
+     *             requester: array{id: int, name: string},
+     *             department: array{id: int, name: string, code: string},
+     *             status: string,
+     *             currency: string,
+     *             totalAmount: string,
+     *             neededBy: string|null,
+     *             submittedAt: string|null,
+     *             createdAt: string
+     *         }>,
+     *         meta: array{
+     *             currentPage: int,
+     *             lastPage: int,
+     *             from: int|null,
+     *             to: int|null,
+     *             total: int
+     *         },
+     *         links: array{previous: string|null, next: string|null}
+     *     }
+     * }
      */
     public function for(User $user, array $filters): array
     {

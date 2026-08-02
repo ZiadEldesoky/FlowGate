@@ -19,9 +19,15 @@ afterEach(function (): void {
     CarbonImmutable::setTestNow();
 });
 
-it('redirects guests and forbids requesters from procurement reports', function (): void {
+it('enforces the report policy across unauthenticated and non-reporting roles', function (): void {
     $requester = User::factory()->create([
         'role' => UserRole::Requester,
+    ]);
+    $unassignedManager = User::factory()->create([
+        'role' => UserRole::Manager,
+    ]);
+    $administrator = User::factory()->create([
+        'role' => UserRole::Administrator,
     ]);
 
     $this
@@ -32,6 +38,16 @@ it('redirects guests and forbids requesters from procurement reports', function 
         ->actingAs($requester)
         ->get(route('reports.procurement.index'))
         ->assertForbidden();
+
+    $this
+        ->actingAs($unassignedManager)
+        ->get(route('reports.procurement.index'))
+        ->assertForbidden();
+
+    $this
+        ->actingAs($administrator)
+        ->get(route('reports.procurement.index'))
+        ->assertOk();
 });
 
 it('scopes manager reporting metrics and options to managed departments', function (): void {
