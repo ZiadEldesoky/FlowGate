@@ -12,6 +12,9 @@ export type User = {
 
 export type Auth = {
     user: User | null;
+    can: {
+        viewApprovalQueue: boolean;
+    };
 };
 
 export type Passkey = {

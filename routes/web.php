@@ -1,6 +1,10 @@
 <?php
 
+use App\Http\Controllers\ApprovalQueueController;
 use App\Http\Controllers\PurchaseRequestController;
+use App\Http\Controllers\PurchaseRequestManagerApprovalController;
+use App\Http\Controllers\PurchaseRequestProcurementApprovalController;
+use App\Http\Controllers\PurchaseRequestRejectionController;
 use App\Http\Controllers\PurchaseRequestSubmissionController;
 use Illuminate\Support\Facades\Route;
 
@@ -9,6 +13,10 @@ Route::inertia('/', 'welcome')->name('home');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::redirect('dashboard', 'purchase-requests')
         ->name('dashboard');
+
+    Route::get('approvals', ApprovalQueueController::class)
+        ->middleware('can:viewApprovalQueue,App\\Models\\PurchaseRequest')
+        ->name('approvals.index');
 
     Route::get(
         'purchase-requests',
@@ -58,6 +66,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
     )
         ->whereNumber('purchaseRequestId')
         ->name('purchase-requests.submit');
+
+    Route::post(
+        'purchase-requests/{purchaseRequestId}/approve-manager-review',
+        PurchaseRequestManagerApprovalController::class,
+    )
+        ->whereNumber('purchaseRequestId')
+        ->name('purchase-requests.approve-manager-review');
+
+    Route::post(
+        'purchase-requests/{purchaseRequestId}/approve-procurement-review',
+        PurchaseRequestProcurementApprovalController::class,
+    )
+        ->whereNumber('purchaseRequestId')
+        ->name('purchase-requests.approve-procurement-review');
+
+    Route::post(
+        'purchase-requests/{purchaseRequestId}/reject',
+        PurchaseRequestRejectionController::class,
+    )
+        ->whereNumber('purchaseRequestId')
+        ->name('purchase-requests.reject');
 });
 
 require __DIR__.'/settings.php';

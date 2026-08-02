@@ -36,6 +36,23 @@ final readonly class PurchaseRequestPolicy
         return $user->department_id !== null;
     }
 
+    public function viewApprovalQueue(User $user): bool
+    {
+        return $this->viewManagerApprovalQueue($user)
+            || $this->viewProcurementApprovalQueue($user);
+    }
+
+    public function viewManagerApprovalQueue(User $user): bool
+    {
+        return $user->role === UserRole::Manager
+            && $user->managedDepartments()->exists();
+    }
+
+    public function viewProcurementApprovalQueue(User $user): bool
+    {
+        return $this->isProcurement($user) || $this->isAdministrator($user);
+    }
+
     public function update(User $user, PurchaseRequest $purchaseRequest): bool
     {
         return $purchaseRequest->requester_id === $user->id
@@ -133,7 +150,8 @@ final readonly class PurchaseRequestPolicy
         PurchaseRequest $purchaseRequest,
     ): bool {
         return $user->role === UserRole::Manager
-            && $user->department_id !== null
-            && $user->department_id === $purchaseRequest->department_id;
+            && $purchaseRequest->department()
+                ->where('manager_id', $user->id)
+                ->exists();
     }
 }

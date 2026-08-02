@@ -137,9 +137,13 @@ final readonly class PurchaseRequestsIndexQuery
                 'requester_id',
                 $user->id,
             ),
-            UserRole::Manager => $user->department_id === null
-                ? $query->whereRaw('1 = 0')
-                : $query->where('department_id', $user->department_id),
+            UserRole::Manager => $query->whereHas(
+                'department',
+                fn (Builder $department): Builder => $department->where(
+                    'manager_id',
+                    $user->id,
+                ),
+            ),
             UserRole::Procurement,
             UserRole::Administrator => null,
         };

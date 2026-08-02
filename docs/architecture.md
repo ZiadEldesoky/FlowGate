@@ -129,6 +129,12 @@ The UI receives only actions that satisfy both conditions:
 not a security boundary. Every mutation endpoint must authorize the same policy
 ability again immediately before invoking its Action.
 
+The approval queue is also policy-driven. Designated department managers receive
+only `pending_manager_review` requests for departments they manage, while
+procurement and administrator users receive `pending_procurement_review`
+requests. `PendingApprovalReviewsQuery` owns that scoped, searchable read model;
+the queue never grants permission to decide a request.
+
 ## Data integrity
 
 - Foreign keys define ownership and deletion behavior.
@@ -166,9 +172,24 @@ same locale used by the React direction hook.
 
 `PurchaseRequestsIndexQuery` owns search, status filtering, pagination, eager
 loading, and role-aware visibility. Requesters see their own requests, managers
-see their department, and procurement or administrator roles see the full
-workspace. Individual detail and mutation endpoints still authorize through
-`PurchaseRequestPolicy`; query scoping is not a replacement for policy checks.
+see departments they are designated to manage, and procurement or administrator
+roles see the full workspace. Individual detail and mutation endpoints still
+authorize through `PurchaseRequestPolicy`; query scoping is not a replacement
+for policy checks.
+
+## Approval decision boundary
+
+Approval comments are optional and rejection reasons are mandatory. Dedicated
+Form Requests trim both inputs and cap them at 2,000 characters before the thin
+HTTP controllers authorize and invoke `ApproveManagerReview`,
+`ApproveProcurementReview`, or `RejectPurchaseRequest`.
+
+The controllers do not choose the next status or approval stage. They pass the
+authenticated actor and normalized input to the use-case Action;
+`PurchaseRequestWorkflow` derives the transition and
+`TransitionPurchaseRequest` locks the row before atomically writing the
+approval, status, timestamp, and activity log. A stale or unauthorized UI action
+therefore cannot bypass the persisted workflow or policy.
 
 ## Event boundary
 

@@ -1,14 +1,19 @@
 /**
- * Thin frontend accessors over generated Wayfinder helpers.
+ * Thin frontend accessors over generated Wayfinder helpers for purchase
+ * request intake and decision routes.
+ *
  * Generated artifacts live in resources/js/routes (gitignored).
  * Run: php artisan wayfinder:generate --with-form
  */
 import type { InertiaLinkProps } from '@inertiajs/react';
 import { toUrl } from '@/lib/utils';
 import {
+    approveManagerReview as approveManagerReviewRoute,
+    approveProcurementReview as approveProcurementReviewRoute,
     create as createRoute,
     edit as editRoute,
     index as indexRoute,
+    reject as rejectRoute,
     show as showRoute,
     store as storeRoute,
     submit as submitRoute,
@@ -83,4 +88,16 @@ export const purchaseRequestRoutes = {
         asHref(submitRoute(purchaseRequestId)),
     submitUrl: (purchaseRequestId: number | string): string =>
         toUrl(submitRoute(purchaseRequestId)),
+    approveManagerReview: (purchaseRequestId: number | string) =>
+        asHref(approveManagerReviewRoute(purchaseRequestId)),
+    approveManagerReviewUrl: (purchaseRequestId: number | string): string =>
+        toUrl(approveManagerReviewRoute(purchaseRequestId)),
+    approveProcurementReview: (purchaseRequestId: number | string) =>
+        asHref(approveProcurementReviewRoute(purchaseRequestId)),
+    approveProcurementReviewUrl: (purchaseRequestId: number | string): string =>
+        toUrl(approveProcurementReviewRoute(purchaseRequestId)),
+    reject: (purchaseRequestId: number | string) =>
+        asHref(rejectRoute(purchaseRequestId)),
+    rejectUrl: (purchaseRequestId: number | string): string =>
+        toUrl(rejectRoute(purchaseRequestId)),
 } as const;

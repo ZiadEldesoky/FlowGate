@@ -1,7 +1,10 @@
 {
     "Password updated.": "تم تحديث كلمة المرور.",
+    "Manager review approved.": "تم اعتماد مراجعة المدير.",
+    "Procurement review approved.": "تم اعتماد مراجعة المشتريات.",
     "Profile updated.": "تم تحديث الملف الشخصي.",
     "Purchase request created.": "تم إنشاء طلب الشراء.",
+    "Purchase request rejected.": "تم رفض طلب الشراء.",
     "Purchase request submitted for manager review.": "تم إرسال طلب الشراء لمراجعة المدير.",
     "Purchase request updated.": "تم تحديث طلب الشراء."
 }

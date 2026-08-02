@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { PageHeader } from '@/components/ui/page-header';
 import { Spinner } from '@/components/ui/spinner';
+import { DecisionDialogs } from '@/features/approvals';
 import {
     RequestActivitySection,
     RequestApprovalsSection,
@@ -75,7 +76,13 @@ export default function PurchaseRequestsShow({
                             {canSubmit ? (
                                 <Dialog
                                     open={submitDialogOpen}
-                                    onOpenChange={setSubmitDialogOpen}
+                                    onOpenChange={(open) => {
+                                        if (submitForm.processing) {
+                                            return;
+                                        }
+
+                                        setSubmitDialogOpen(open);
+                                    }}
                                 >
                                     <DialogTrigger asChild>
                                         <Button type="button" size="sm">
@@ -122,6 +129,11 @@ export default function PurchaseRequestsShow({
                                     </DialogContent>
                                 </Dialog>
                             ) : null}
+                            <DecisionDialogs
+                                purchaseRequestId={purchaseRequest.id}
+                                allowedActions={allowedActions}
+                                locale={locale}
+                            />
                         </>
                     }
                 />

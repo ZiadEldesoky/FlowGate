@@ -4,3 +4,4 @@ export type * from './ui';
 export type * from './status';
 export type * from './locale';
 export type * from './purchase-request';
+export type * from './approvals';
