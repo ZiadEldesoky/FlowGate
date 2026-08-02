@@ -16,6 +16,7 @@ export type Auth = {
     can: {
         viewApprovalQueue: boolean;
         manageOrganization: boolean;
+        viewProcurementReports: boolean;
     };
 };
 
