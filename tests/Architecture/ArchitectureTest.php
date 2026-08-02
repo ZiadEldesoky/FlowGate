@@ -25,7 +25,10 @@ arch('controllers do not query models or manage transactions directly')
     ]);
 
 arch('domain actions do not perform authorization')
-    ->expect('App\Domain\Procurement\Actions')
+    ->expect([
+        'App\Domain\Organization\Actions',
+        'App\Domain\Procurement\Actions',
+    ])
     ->not->toUse([
         AuthorizesRequests::class,
         Gate::class,

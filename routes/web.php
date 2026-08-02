@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\ApprovalQueueController;
+use App\Http\Controllers\DepartmentAdministrationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\NotificationReadAllController;
 use App\Http\Controllers\NotificationReadController;
+use App\Http\Controllers\OrganizationActivityController;
+use App\Http\Controllers\OrganizationUserAdministrationController;
 use App\Http\Controllers\PurchaseRequestCancellationController;
 use App\Http\Controllers\PurchaseRequestCompletionController;
 use App\Http\Controllers\PurchaseRequestController;
@@ -18,6 +21,58 @@ Route::inertia('/', 'welcome')->name('home');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::redirect('dashboard', 'purchase-requests')
         ->name('dashboard');
+
+    Route::redirect('administration', '/administration/departments')
+        ->middleware('can:viewAny,App\\Models\\Department')
+        ->name('administration.index');
+
+    Route::prefix('administration')
+        ->name('administration.')
+        ->group(function () {
+            Route::get(
+                'departments',
+                [DepartmentAdministrationController::class, 'index'],
+            )
+                ->middleware('can:viewAny,App\\Models\\Department')
+                ->name('departments.index');
+
+            Route::post(
+                'departments',
+                [DepartmentAdministrationController::class, 'store'],
+            )
+                ->middleware('can:create,App\\Models\\Department')
+                ->name('departments.store');
+
+            Route::put(
+                'departments/{departmentId}',
+                [DepartmentAdministrationController::class, 'update'],
+            )
+                ->whereNumber('departmentId')
+                ->name('departments.update');
+
+            Route::get(
+                'users',
+                [OrganizationUserAdministrationController::class, 'index'],
+            )
+                ->middleware('can:viewAny,App\\Models\\User')
+                ->name('users.index');
+
+            Route::put(
+                'users/{userId}',
+                [OrganizationUserAdministrationController::class, 'update'],
+            )
+                ->whereNumber('userId')
+                ->name('users.update');
+
+            Route::get(
+                'activity',
+                OrganizationActivityController::class,
+            )
+                ->middleware(
+                    'can:viewAny,App\\Models\\OrganizationActivityLog',
+                )
+                ->name('activity.index');
+        });
 
     Route::get('approvals', ApprovalQueueController::class)
         ->middleware('can:viewApprovalQueue,App\\Models\\PurchaseRequest')

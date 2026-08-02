@@ -1,2 +1,12 @@
-/** Administration feature surface — domain UI will land here after backend contracts. */
-export {};
+export { administrationRoutes } from './routes';
+export {
+    administrationCopy,
+    formatAdministrationCopy,
+    getActivityActionLabel,
+    getActivityFieldLabel,
+    getActivitySubjectTypeLabel,
+    getAdministrationCopy,
+    getOrganizationRoleLabel,
+} from './i18n';
+export { AdministrationSubnav } from './components/administration-subnav';
+export { AdministrationPaginationFooter } from './components/pagination-footer';

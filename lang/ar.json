@@ -1,4 +1,8 @@
 {
+    "A manager must belong to a department.": "يجب أن ينتمي المدير إلى قسم.",
+    "Department created.": "تم إنشاء القسم.",
+    "Department updated.": "تم تحديث القسم.",
+    "Reassign this user's managed departments before changing their role or department.": "أعد تعيين الأقسام التي يديرها هذا المستخدم قبل تغيير دوره أو قسمه.",
     "Password updated.": "تم تحديث كلمة المرور.",
     "Manager review approved.": "تم اعتماد مراجعة المدير.",
     "Procurement review approved.": "تم اعتماد مراجعة المشتريات.",
@@ -8,5 +12,9 @@
     "Purchase request cancelled.": "تم إلغاء طلب الشراء.",
     "Purchase request rejected.": "تم رفض طلب الشراء.",
     "Purchase request submitted for manager review.": "تم إرسال طلب الشراء لمراجعة المدير.",
-    "Purchase request updated.": "تم تحديث طلب الشراء."
+    "Purchase request updated.": "تم تحديث طلب الشراء.",
+    "The last administrator cannot be demoted.": "لا يمكن تخفيض صلاحية آخر مسؤول في النظام.",
+    "The selected department is invalid.": "القسم المحدد غير صالح.",
+    "The selected manager must belong to this department and have the manager role.": "يجب أن ينتمي المدير المحدد إلى هذا القسم وأن يحمل دور المدير.",
+    "User organization assignment updated.": "تم تحديث دور المستخدم وقسمه."
 }

@@ -232,6 +232,20 @@ components from `features/purchase-requests`.
 - The sidebar unread badge comes from the shared server prop. Mark-read actions
   update the server and never optimistically invent an authoritative count.
 
+## Organization administration
+
+- The administration navigation entry renders only from the shared
+  `auth.can.manageOrganization` capability; React never infers access from a
+  role name.
+- Department, user, and activity screens share one localized subnavigation and
+  pagination pattern.
+- Manager choices, role options, department options, counts, filters, and audit
+  changes come from server-owned read models.
+- Assignment dialogs keep only ephemeral form state. They display validation
+  returned by the server and close only after a successful mutation.
+- Administrative activity uses localized presentation labels while preserving
+  English action, subject, and field keys in the backend contract.
+
 ## Usage guidance
 
 1. Build pages from primitives and feature components, not one-off utility soup

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Models\Department;
 use App\Models\PurchaseRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -55,6 +56,11 @@ class HandleInertiaRequests extends Middleware
                         && Gate::forUser($user)->allows(
                             'viewApprovalQueue',
                             PurchaseRequest::class,
+                        ),
+                    'manageOrganization' => $user instanceof User
+                        && Gate::forUser($user)->allows(
+                            'viewAny',
+                            Department::class,
                         ),
                 ],
             ],

@@ -1,9 +1,9 @@
 # FlowGate
 
-FlowGate is a bilingual procurement approval application built to demonstrate a
-practical Laravel-native modular monolith. It keeps workflow rules on the
-server, records every state change atomically, and exposes a focused React
-interface through Inertia.
+FlowGate gives organizations a clear, traceable path from purchase request
+intake through manager and procurement approval to completion. Its bilingual
+React interface is backed by a Laravel-native modular monolith that keeps
+workflow rules on the server and records every state change atomically.
 
 ## Engineering highlights
 
@@ -16,6 +16,8 @@ interface through Inertia.
 - Manager approval, procurement approval, and reason-required rejection flows.
 - Requester cancellation and procurement-owned completion flows.
 - After-commit, role-aware database notifications with a user-scoped inbox.
+- Administrator-only department, manager, role, and membership management.
+- Atomic organization audit entries for every administrative assignment change.
 - Events dispatched only after the surrounding database transaction commits.
 - Eloquent models limited to relationships, casts, and query scopes.
 - Arabic RTL and English LTR from one component system.
@@ -29,9 +31,11 @@ flowchart LR
     Browser["React + Inertia UI"] --> Request["Form Request"]
     Request --> Controller["Thin Controller"]
     Controller --> Policy["Laravel Policy"]
-    Policy --> Action["Use-case Action"]
-    Action --> Workflow["PurchaseRequestWorkflow"]
-    Action --> DB[("Relational Database")]
+    Controller --> ProcurementAction["Procurement Action"]
+    Controller --> OrganizationAction["Organization Action"]
+    ProcurementAction --> Workflow["PurchaseRequestWorkflow"]
+    ProcurementAction --> DB[("Relational Database")]
+    OrganizationAction --> DB
     DB --> Event["After-commit Domain Event"]
     Event --> Listener["Listener / Notification / Job"]
 
@@ -58,6 +62,7 @@ erDiagram
     PURCHASE_REQUESTS ||--o{ ACTIVITY_LOGS : records
     USERS o|--o{ ACTIVITY_LOGS : performs
     USERS ||--o{ NOTIFICATIONS : receives
+    USERS ||--o{ ORGANIZATION_ACTIVITY_LOGS : performs
 
     DEPARTMENTS {
         bigint id PK
@@ -110,10 +115,21 @@ erDiagram
         text data
         timestamp read_at
     }
+    ORGANIZATION_ACTIVITY_LOGS {
+        bigint id PK
+        bigint actor_id FK
+        enum action
+        enum subject_type
+        bigint subject_id
+        varchar subject_label
+        json changes
+    }
 ```
 
 Money is stored as `DECIMAL`; foreign keys, unique constraints, and workflow
-indexes are defined in migrations.
+indexes are defined in migrations. Organization activity entries retain a
+human-readable subject snapshot and the exact changed fields without storing
+credentials or other secrets.
 
 ## Local setup
 

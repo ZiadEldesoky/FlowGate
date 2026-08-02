@@ -36,6 +36,22 @@ const breadcrumbLabels: Readonly<
         ar: 'الإشعارات',
         en: 'Notifications',
     },
+    Administration: {
+        ar: 'الإدارة',
+        en: 'Administration',
+    },
+    Departments: {
+        ar: 'الأقسام',
+        en: 'Departments',
+    },
+    Users: {
+        ar: 'المستخدمون',
+        en: 'Users',
+    },
+    Activity: {
+        ar: 'سجل النشاط',
+        en: 'Activity',
+    },
 };
 
 export function localizeBreadcrumbs(
