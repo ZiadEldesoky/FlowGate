@@ -15,23 +15,25 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { getAccountCopy } from '@/features/account/i18n';
+import { useDirection } from '@/hooks/use-direction';
 
 export default function DeleteUser() {
     const passwordInput = useRef<HTMLInputElement>(null);
+    const { locale } = useDirection();
+    const t = getAccountCopy(locale).deleteAccount;
 
     return (
         <div className="space-y-6">
             <Heading
                 variant="small"
-                title="Delete account"
-                description="Delete your account and all of its resources"
+                title={t.title}
+                description={t.description}
             />
             <div className="space-y-4 rounded-lg border border-destructive/20 bg-destructive/5 p-4">
                 <div className="relative space-y-0.5 text-destructive">
-                    <p className="font-medium">Warning</p>
-                    <p className="text-sm">
-                        Please proceed with caution, this cannot be undone.
-                    </p>
+                    <p className="font-medium">{t.warning}</p>
+                    <p className="text-sm">{t.warningDescription}</p>
                 </div>
 
                 <Dialog>
@@ -40,18 +42,13 @@ export default function DeleteUser() {
                             variant="destructive"
                             data-test="delete-user-button"
                         >
-                            Delete account
+                            {t.trigger}
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
-                        <DialogTitle>
-                            Are you sure you want to delete your account?
-                        </DialogTitle>
+                        <DialogTitle>{t.confirmTitle}</DialogTitle>
                         <DialogDescription>
-                            Once your account is deleted, all of its resources
-                            and data will also be permanently deleted. Please
-                            enter your password to confirm you would like to
-                            permanently delete your account.
+                            {t.confirmDescription}
                         </DialogDescription>
 
                         <Form
@@ -70,14 +67,14 @@ export default function DeleteUser() {
                                             htmlFor="password"
                                             className="sr-only"
                                         >
-                                            Password
+                                            {t.password}
                                         </Label>
 
                                         <PasswordInput
                                             id="password"
                                             name="password"
                                             ref={passwordInput}
-                                            placeholder="Password"
+                                            placeholder={t.password}
                                             autoComplete="current-password"
                                         />
 
@@ -92,7 +89,7 @@ export default function DeleteUser() {
                                                     resetAndClearErrors()
                                                 }
                                             >
-                                                Cancel
+                                                {t.cancel}
                                             </Button>
                                         </DialogClose>
 
@@ -105,7 +102,7 @@ export default function DeleteUser() {
                                                 type="submit"
                                                 data-test="confirm-delete-user-button"
                                             >
-                                                Delete account
+                                                {t.confirm}
                                             </button>
                                         </Button>
                                     </DialogFooter>

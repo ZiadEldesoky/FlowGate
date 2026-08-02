@@ -7,6 +7,8 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import { getAccountCopy } from '@/features/account/i18n';
+import { useDirection } from '@/hooks/use-direction';
 import { useMobileNavigation } from '@/hooks/use-mobile-navigation';
 import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
@@ -18,6 +20,8 @@ type Props = {
 
 export function UserMenuContent({ user }: Props) {
     const cleanup = useMobileNavigation();
+    const { locale } = useDirection();
+    const t = getAccountCopy(locale).menu;
 
     const handleLogout = () => {
         cleanup();
@@ -41,7 +45,7 @@ export function UserMenuContent({ user }: Props) {
                         onClick={cleanup}
                     >
                         <Settings className="me-2" />
-                        Settings
+                        {t.settings}
                     </Link>
                 </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -55,7 +59,7 @@ export function UserMenuContent({ user }: Props) {
                     data-test="logout-button"
                 >
                     <LogOut className="me-2" />
-                    Log out
+                    {t.logout}
                 </Link>
             </DropdownMenuItem>
         </>

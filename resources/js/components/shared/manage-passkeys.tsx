@@ -4,6 +4,8 @@ import { destroy } from '@/actions/Laravel/Passkeys/Http/Controllers/PasskeyRegi
 import Heading from '@/components/shared/heading';
 import PasskeyItem from '@/components/shared/passkey-item';
 import PasskeyRegistration from '@/components/shared/passkey-register';
+import { getAccountCopy } from '@/features/account/i18n';
+import { useDirection } from '@/hooks/use-direction';
 import type { Passkey } from '@/types/auth';
 
 export type Props = {
@@ -12,14 +14,17 @@ export type Props = {
 };
 
 const EmptyState = () => {
+    const { locale } = useDirection();
+    const t = getAccountCopy(locale).passkeys;
+
     return (
         <div className="p-8 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-md bg-muted">
                 <KeyRound className="h-7 w-7 text-muted-foreground" />
             </div>
-            <p className="font-medium">No passkeys yet</p>
+            <p className="font-medium">{t.emptyTitle}</p>
             <p className="mt-1 text-sm text-muted-foreground">
-                Add a passkey to sign in without a password
+                {t.emptyDescription}
             </p>
         </div>
     );
@@ -27,6 +32,8 @@ const EmptyState = () => {
 
 export default function ManagePasskeys(props: Props) {
     const passkeys = props.passkeys ?? [];
+    const { locale } = useDirection();
+    const t = getAccountCopy(locale).passkeys;
 
     const handleDelete = (id: number, onError: () => void) => {
         router.delete(destroy.url(id), {
@@ -47,8 +54,8 @@ export default function ManagePasskeys(props: Props) {
         <div className="space-y-6">
             <Heading
                 variant="small"
-                title="Passkeys"
-                description="Manage your passkeys for passwordless sign-in"
+                title={t.title}
+                description={t.description}
             />
 
             <div className="overflow-hidden rounded-lg border border-border">
