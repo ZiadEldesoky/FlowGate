@@ -15,6 +15,7 @@ export type Auth = {
     unreadNotificationsCount: number;
     can: {
         viewApprovalQueue: boolean;
+        manageOrganization: boolean;
     };
 };
 

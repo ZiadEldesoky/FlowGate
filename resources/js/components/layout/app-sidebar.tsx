@@ -18,6 +18,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { administrationRoutes } from '@/features/administration';
 import { approvalRoutes } from '@/features/approvals';
 import { notificationRoutes } from '@/features/notifications';
 import { purchaseRequestRoutes } from '@/features/purchase-requests';
@@ -29,6 +30,7 @@ export function AppSidebar() {
     const { isRtl, locale } = useDirection();
     const { auth } = usePage().props;
     const canViewApprovals = auth.can.viewApprovalQueue;
+    const canManageOrganization = auth.can.manageOrganization;
     const unreadNotificationsCount = auth.unreadNotificationsCount;
 
     const mainNavItems: NavItem[] = [
@@ -57,12 +59,15 @@ export function AppSidebar() {
             icon: Bell,
             badge: unreadNotificationsCount,
         },
-        {
-            title: locale === 'ar' ? 'الإدارة' : 'Administration',
-            href: dashboard(),
-            icon: Settings2,
-            disabled: true,
-        },
+        ...(canManageOrganization
+            ? [
+                  {
+                      title: locale === 'ar' ? 'الإدارة' : 'Administration',
+                      href: administrationRoutes.departments.index(),
+                      icon: Settings2,
+                  } satisfies NavItem,
+              ]
+            : []),
     ];
 
     return (
