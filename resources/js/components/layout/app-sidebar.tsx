@@ -19,6 +19,7 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { approvalRoutes } from '@/features/approvals';
+import { notificationRoutes } from '@/features/notifications';
 import { purchaseRequestRoutes } from '@/features/purchase-requests';
 import { useDirection } from '@/hooks/use-direction';
 import { dashboard } from '@/routes';
@@ -28,6 +29,7 @@ export function AppSidebar() {
     const { isRtl, locale } = useDirection();
     const { auth } = usePage().props;
     const canViewApprovals = auth.can.viewApprovalQueue;
+    const unreadNotificationsCount = auth.unreadNotificationsCount;
 
     const mainNavItems: NavItem[] = [
         {
@@ -51,9 +53,9 @@ export function AppSidebar() {
             : []),
         {
             title: locale === 'ar' ? 'الإشعارات' : 'Notifications',
-            href: dashboard(),
+            href: notificationRoutes.index(),
             icon: Bell,
-            disabled: true,
+            badge: unreadNotificationsCount,
         },
         {
             title: locale === 'ar' ? 'الإدارة' : 'Administration',

@@ -274,6 +274,7 @@ export function RequestActivitySection({
                             <TableHead>{labels.fromStatus}</TableHead>
                             <TableHead>{labels.toStatus}</TableHead>
                             <TableHead>{labels.actor}</TableHead>
+                            <TableHead>{labels.comment}</TableHead>
                             <TableHead>{labels.createdAt}</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -302,6 +303,9 @@ export function RequestActivitySection({
                                 </TableCell>
                                 <TableCell>
                                     {entry.actor?.name ?? labels.notAvailable}
+                                </TableCell>
+                                <TableCell className="max-w-[16rem] whitespace-normal">
+                                    {entry.comment ?? labels.notAvailable}
                                 </TableCell>
                                 <TableCell className="text-muted-foreground">
                                     {formatDateTime(entry.createdAt, locale)}

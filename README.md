@@ -14,6 +14,8 @@ interface through Inertia.
 - Atomic status, approval, and activity-log writes.
 - Role-scoped approval queues for designated managers and procurement reviewers.
 - Manager approval, procurement approval, and reason-required rejection flows.
+- Requester cancellation and procurement-owned completion flows.
+- After-commit, role-aware database notifications with a user-scoped inbox.
 - Events dispatched only after the surrounding database transaction commits.
 - Eloquent models limited to relationships, casts, and query scopes.
 - Arabic RTL and English LTR from one component system.
@@ -55,6 +57,7 @@ erDiagram
     USERS ||--o{ APPROVALS : decides
     PURCHASE_REQUESTS ||--o{ ACTIVITY_LOGS : records
     USERS o|--o{ ACTIVITY_LOGS : performs
+    USERS ||--o{ NOTIFICATIONS : receives
 
     DEPARTMENTS {
         bigint id PK
@@ -98,6 +101,14 @@ erDiagram
         enum action
         enum from_status
         enum to_status
+    }
+    NOTIFICATIONS {
+        uuid id PK
+        varchar notifiable_type
+        bigint notifiable_id
+        varchar type
+        text data
+        timestamp read_at
     }
 ```
 

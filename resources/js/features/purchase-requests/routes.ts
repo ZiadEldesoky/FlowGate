@@ -10,6 +10,8 @@ import { toUrl } from '@/lib/utils';
 import {
     approveManagerReview as approveManagerReviewRoute,
     approveProcurementReview as approveProcurementReviewRoute,
+    cancel as cancelRoute,
+    complete as completeRoute,
     create as createRoute,
     edit as editRoute,
     index as indexRoute,
@@ -100,4 +102,12 @@ export const purchaseRequestRoutes = {
         asHref(rejectRoute(purchaseRequestId)),
     rejectUrl: (purchaseRequestId: number | string): string =>
         toUrl(rejectRoute(purchaseRequestId)),
+    complete: (purchaseRequestId: number | string) =>
+        asHref(completeRoute(purchaseRequestId)),
+    completeUrl: (purchaseRequestId: number | string): string =>
+        toUrl(completeRoute(purchaseRequestId)),
+    cancel: (purchaseRequestId: number | string) =>
+        asHref(cancelRoute(purchaseRequestId)),
+    cancelUrl: (purchaseRequestId: number | string): string =>
+        toUrl(cancelRoute(purchaseRequestId)),
 } as const;

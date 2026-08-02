@@ -199,6 +199,43 @@ listen to that event rather than running inside the transaction. Failed
 transactions therefore produce neither committed audit data nor external side
 effects.
 
+`SendPurchaseRequestTransitionNotifications` is discovered as a Laravel event
+listener. It reloads the committed request, resolves recipients through
+`PurchaseRequestNotificationRecipientsQuery`, and writes a semantic database
+notification. Stored data contains English contract keys and workflow values;
+the React client owns Arabic/English presentation.
+
+| Committed transition | Notification recipients |
+| --- | --- |
+| Submit | Designated manager of the request department |
+| Manager approval | Procurement and administrator users |
+| Procurement approval | Requester |
+| Rejection | Requester |
+| Completion | Requester |
+| Cancellation during manager review | Designated department manager |
+| Cancellation during procurement review | Procurement and administrator users |
+| Draft cancellation | None |
+
+The actor is always excluded from the recipient list. Notification reads are
+scoped through the authenticated user's notification relationship, so another
+user's UUID returns `404` instead of exposing or mutating that record.
+
+## Lifecycle and notification HTTP boundary
+
+Approved requests can be completed only by procurement or administrator users.
+Draft or in-review requests can be cancelled only by their requester. The
+completion and cancellation controllers re-authorize the corresponding Policy
+ability and invoke `CompletePurchaseRequest` or `CancelPurchaseRequest`; they do
+not select the next state themselves. Cancellation comments are optional,
+trimmed, limited to 2,000 characters, and stored with the atomic activity log
+when present.
+
+The notification inbox is a read model composed by
+`UserNotificationsIndexQuery`. `MarkNotificationAsRead` and
+`MarkAllNotificationsAsRead` are explicit Organization Actions. The shared
+unread count is a navigation hint only and never grants access to a
+notification.
+
 ## Deliberate omissions
 
 - No microservices or message broker: there is no deployment or scaling evidence

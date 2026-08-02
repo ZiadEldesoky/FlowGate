@@ -23,6 +23,7 @@ export {
 export { PurchaseRequestTable } from './components/purchase-request-table';
 export { PurchaseRequestForm } from './components/purchase-request-form';
 export { ItemRowsEditor } from './components/item-rows-editor';
+export { LifecycleDialogs } from './components/lifecycle-dialogs';
 export {
     RequestActivitySection,
     RequestApprovalsSection,

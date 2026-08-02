@@ -32,6 +32,10 @@ const breadcrumbLabels: Readonly<
         ar: 'إعدادات الأمان',
         en: 'Security settings',
     },
+    Notifications: {
+        ar: 'الإشعارات',
+        en: 'Notifications',
+    },
 };
 
 export function localizeBreadcrumbs(
