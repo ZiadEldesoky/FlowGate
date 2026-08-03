@@ -11,10 +11,6 @@ use App\Models\PurchaseRequest;
 use App\Models\User;
 use Inertia\Testing\AssertableInertia;
 
-beforeEach(function (): void {
-    $this->withoutVite();
-});
-
 /**
  * @return array{
  *     title: string,

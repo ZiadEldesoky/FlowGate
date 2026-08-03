@@ -12,7 +12,6 @@ use Inertia\Testing\AssertableInertia;
 
 beforeEach(function (): void {
     CarbonImmutable::setTestNow('2026-08-02 12:00:00');
-    $this->withoutVite();
 });
 
 afterEach(function (): void {
