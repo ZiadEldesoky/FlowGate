@@ -35,6 +35,8 @@ export type PurchaseRequestListItem = {
     totalAmount: string;
     neededBy: string | null;
     submittedAt: string | null;
+    reviewDueAt: string | null;
+    isOverdue: boolean;
     createdAt: string;
 };
 
@@ -158,6 +160,8 @@ export type PurchaseRequestDetail = {
     currency: string;
     totalAmount: string;
     submittedAt: string | null;
+    reviewDueAt: string | null;
+    isOverdue: boolean;
     createdAt: string;
     requester: {
         id: number;

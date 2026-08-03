@@ -30,3 +30,5 @@ export {
     RequestItemsSection,
     RequestSummarySection,
 } from './components/request-detail-sections';
+export { ReviewSla } from './components/review-sla';
+export type { ReviewSlaLabels } from './components/review-sla';
