@@ -85,6 +85,16 @@ it('dispatches jobs only for currently overdue reviews', function (): void {
         'status' => PurchaseRequestStatus::PendingManagerReview,
         'review_due_at' => now()->subMinute(),
     ]);
+    $alreadyProcessed = PurchaseRequest::factory()->create([
+        'status' => PurchaseRequestStatus::PendingManagerReview,
+        'review_due_at' => now()->subHour(),
+    ]);
+    $processedReminder = $alreadyProcessed->approvalReminders()->create([
+        'stage' => ApprovalStage::ManagerReview,
+        'reminder_on' => '2026-08-03',
+    ]);
+    $processedReminder->processed_at = now();
+    $processedReminder->save();
     PurchaseRequest::factory()->create([
         'status' => PurchaseRequestStatus::PendingProcurementReview,
         'review_due_at' => now()->addMinute(),
@@ -104,6 +114,11 @@ it('dispatches jobs only for currently overdue reviews', function (): void {
         fn (SendOverdueApprovalReminder $job): bool => $job->purchaseRequestId
             === $overdue->id
             && $job->reminderOn === '2026-08-03',
+    );
+    Bus::assertNotDispatched(
+        SendOverdueApprovalReminder::class,
+        fn (SendOverdueApprovalReminder $job): bool => $job->purchaseRequestId
+            === $alreadyProcessed->id,
     );
 });
 

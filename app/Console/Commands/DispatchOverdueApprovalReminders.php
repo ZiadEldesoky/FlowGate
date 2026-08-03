@@ -21,6 +21,7 @@ final class DispatchOverdueApprovalReminders extends Command
         $reminderOn = $asOf->toDateString();
         $dispatched = $overdueReviews->eachDueAt(
             $asOf,
+            $reminderOn,
             static function (int $purchaseRequestId) use (
                 $reminderOn,
             ): void {
