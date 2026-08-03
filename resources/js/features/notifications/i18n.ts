@@ -1,6 +1,9 @@
 import { formatDateTime } from '@/features/purchase-requests/utils';
 import type { AppLocale } from '@/types/locale';
-import type { UserNotification } from '@/types/notifications';
+import type {
+    ApprovalReviewStage,
+    UserNotification,
+} from '@/types/notifications';
 
 export const notificationCopy = {
     ar: {
@@ -99,17 +102,10 @@ export function formatNotificationCopy(
     }, template);
 }
 
-function stageLabel(stage: string, locale: AppLocale): string {
+function stageLabel(stage: ApprovalReviewStage, locale: AppLocale): string {
     const t = getNotificationCopy(locale);
 
-    switch (stage) {
-        case 'manager_review':
-            return t.stageManager;
-        case 'procurement_review':
-            return t.stageProcurement;
-        default:
-            return stage;
-    }
+    return stage === 'manager_review' ? t.stageManager : t.stageProcurement;
 }
 
 export function getNotificationMessage(

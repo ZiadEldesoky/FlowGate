@@ -20,14 +20,14 @@ export type UserNotificationBase = {
 export type PurchaseRequestTransitionNotification = UserNotificationBase & {
     kind: 'purchase_request_transition';
     actorName: string;
-    action: PurchaseRequestNotificationAction | string;
+    action: PurchaseRequestNotificationAction;
     fromStatus: string;
     toStatus: string;
 };
 
 export type PurchaseRequestReviewOverdueNotification = UserNotificationBase & {
     kind: 'purchase_request_review_overdue';
-    stage: ApprovalReviewStage | string;
+    stage: ApprovalReviewStage;
     reviewDueAt: string;
 };
 
