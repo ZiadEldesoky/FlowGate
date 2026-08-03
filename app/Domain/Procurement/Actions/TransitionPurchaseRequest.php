@@ -7,9 +7,11 @@ namespace App\Domain\Procurement\Actions;
 use App\Domain\Procurement\Enums\ApprovalDecision;
 use App\Domain\Procurement\Enums\PurchaseRequestAction;
 use App\Domain\Procurement\Events\PurchaseRequestTransitioned;
+use App\Domain\Procurement\Rules\PurchaseRequestReviewSla;
 use App\Domain\Procurement\Rules\PurchaseRequestWorkflow;
 use App\Models\PurchaseRequest;
 use App\Models\User;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\DB;
 use LogicException;
 
@@ -17,6 +19,7 @@ final readonly class TransitionPurchaseRequest
 {
     public function __construct(
         private PurchaseRequestWorkflow $workflow,
+        private PurchaseRequestReviewSla $reviewSla,
     ) {}
 
     public function handle(
@@ -42,6 +45,7 @@ final readonly class TransitionPurchaseRequest
             $fromStatus = $lockedRequest->status;
             $toStatus = $this->workflow->transition($fromStatus, $action);
             $normalizedComment = $this->normalizeComment($comment);
+            $transitionedAt = now();
 
             if ($decision !== null) {
                 $lockedRequest->approvals()->create([
@@ -49,12 +53,20 @@ final readonly class TransitionPurchaseRequest
                     'stage' => $this->workflow->approvalStageFor($fromStatus, $action),
                     'decision' => $decision,
                     'comment' => $normalizedComment,
-                    'decided_at' => now(),
+                    'decided_at' => $transitionedAt,
                 ]);
             }
 
             $lockedRequest->status = $toStatus;
-            $this->applyTransitionTimestamp($lockedRequest, $action);
+            $lockedRequest->review_due_at = $this->reviewSla->dueAtFor(
+                $toStatus,
+                $transitionedAt,
+            );
+            $this->applyTransitionTimestamp(
+                $lockedRequest,
+                $action,
+                $transitionedAt,
+            );
             $lockedRequest->save();
 
             $lockedRequest->activityLogs()->create([
@@ -82,12 +94,13 @@ final readonly class TransitionPurchaseRequest
     private function applyTransitionTimestamp(
         PurchaseRequest $purchaseRequest,
         PurchaseRequestAction $action,
+        CarbonInterface $transitionedAt,
     ): void {
         match ($action) {
-            PurchaseRequestAction::Submit => $purchaseRequest->submitted_at = now(),
-            PurchaseRequestAction::Reject => $purchaseRequest->rejected_at = now(),
-            PurchaseRequestAction::Complete => $purchaseRequest->completed_at = now(),
-            PurchaseRequestAction::Cancel => $purchaseRequest->cancelled_at = now(),
+            PurchaseRequestAction::Submit => $purchaseRequest->submitted_at = $transitionedAt,
+            PurchaseRequestAction::Reject => $purchaseRequest->rejected_at = $transitionedAt,
+            PurchaseRequestAction::Complete => $purchaseRequest->completed_at = $transitionedAt,
+            PurchaseRequestAction::Cancel => $purchaseRequest->cancelled_at = $transitionedAt,
             PurchaseRequestAction::ApproveManagerReview,
             PurchaseRequestAction::ApproveProcurementReview => null,
         };

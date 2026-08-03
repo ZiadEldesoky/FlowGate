@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Procurement\Queries;
 
 use App\Domain\Procurement\Enums\PurchaseRequestAction;
+use App\Domain\Procurement\Rules\PurchaseRequestReviewSla;
 use App\Models\PurchaseRequest;
 use App\Models\User;
 use Illuminate\Contracts\Auth\Access\Gate;
@@ -13,6 +14,7 @@ final readonly class PurchaseRequestDetailsQuery
 {
     public function __construct(
         private AllowedPurchaseRequestActionsQuery $allowedActions,
+        private PurchaseRequestReviewSla $reviewSla,
         private Gate $gate,
     ) {}
 
@@ -28,6 +30,8 @@ final readonly class PurchaseRequestDetailsQuery
      *         currency: string,
      *         totalAmount: string,
      *         submittedAt: string|null,
+     *         reviewDueAt: string|null,
+     *         isOverdue: bool,
      *         createdAt: string,
      *         requester: array{id: int, name: string, email: string},
      *         department: array{id: int, name: string, code: string},
@@ -134,6 +138,11 @@ final readonly class PurchaseRequestDetailsQuery
                 'currency' => $purchaseRequest->currency,
                 'totalAmount' => $purchaseRequest->total_amount,
                 'submittedAt' => $purchaseRequest->submitted_at?->toAtomString(),
+                'reviewDueAt' => $purchaseRequest->review_due_at?->toAtomString(),
+                'isOverdue' => $this->reviewSla->isOverdue(
+                    $purchaseRequest->review_due_at,
+                    now(),
+                ),
                 'createdAt' => $purchaseRequest->created_at?->toAtomString() ?? '',
                 'requester' => [
                     'id' => $purchaseRequest->requester->id,

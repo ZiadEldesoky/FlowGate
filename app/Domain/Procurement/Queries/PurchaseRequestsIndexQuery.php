@@ -37,6 +37,8 @@ final readonly class PurchaseRequestsIndexQuery
      *             totalAmount: string,
      *             neededBy: string|null,
      *             submittedAt: string|null,
+     *             reviewDueAt: string|null,
+     *             isOverdue: bool,
      *             createdAt: string
      *         }>,
      *         meta: array{
