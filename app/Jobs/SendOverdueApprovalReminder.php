@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\Domain\Procurement\Enums\ApprovalStage;
 use App\Domain\Procurement\Queries\PurchaseRequestNotificationRecipientsQuery;
 use App\Domain\Procurement\Rules\PurchaseRequestReviewSla;
 use App\Models\ApprovalReminder;
@@ -25,6 +26,7 @@ final class SendOverdueApprovalReminder implements ShouldQueue
 
     public function __construct(
         public readonly int $purchaseRequestId,
+        public readonly ApprovalStage $stage,
         public readonly string $reminderOn,
     ) {}
 
@@ -50,11 +52,11 @@ final class SendOverdueApprovalReminder implements ShouldQueue
                 return;
             }
 
-            $stage = $sla->stageFor($purchaseRequest->status);
+            $currentStage = $sla->stageFor($purchaseRequest->status);
             $processedAt = now();
 
             if (
-                $stage === null
+                $currentStage !== $this->stage
                 || ! $sla->isOverdue(
                     $purchaseRequest->review_due_at,
                     $processedAt,
@@ -65,7 +67,7 @@ final class SendOverdueApprovalReminder implements ShouldQueue
 
             $reminder = ApprovalReminder::query()->firstOrNew([
                 'purchase_request_id' => $purchaseRequest->id,
-                'stage' => $stage,
+                'stage' => $currentStage,
                 'reminder_on' => $this->reminderOn,
             ]);
 
@@ -75,7 +77,7 @@ final class SendOverdueApprovalReminder implements ShouldQueue
 
             $reviewers = $recipients->reviewersForStage(
                 $purchaseRequest,
-                $stage,
+                $currentStage,
             );
 
             Notification::send(
@@ -84,7 +86,7 @@ final class SendOverdueApprovalReminder implements ShouldQueue
                     purchaseRequestId: $purchaseRequest->id,
                     reference: $purchaseRequest->reference,
                     title: $purchaseRequest->title,
-                    stage: $stage,
+                    stage: $currentStage,
                     reviewDueAt: $purchaseRequest->review_due_at->toAtomString(),
                 ),
             );

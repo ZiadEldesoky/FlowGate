@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Domain\Procurement\Enums\ApprovalStage;
 use App\Domain\Procurement\Queries\OverduePurchaseRequestReviewsQuery;
 use App\Jobs\SendOverdueApprovalReminder;
 use Illuminate\Console\Command;
@@ -22,11 +23,15 @@ final class DispatchOverdueApprovalReminders extends Command
         $dispatched = $overdueReviews->eachDueAt(
             $asOf,
             $reminderOn,
-            static function (int $purchaseRequestId) use (
+            static function (
+                int $purchaseRequestId,
+                ApprovalStage $stage,
+            ) use (
                 $reminderOn,
             ): void {
                 SendOverdueApprovalReminder::dispatch(
                     $purchaseRequestId,
+                    $stage,
                     $reminderOn,
                 );
             },

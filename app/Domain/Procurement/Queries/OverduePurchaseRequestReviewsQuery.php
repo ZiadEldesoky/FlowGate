@@ -6,6 +6,7 @@ namespace App\Domain\Procurement\Queries;
 
 use App\Domain\Procurement\Enums\ApprovalStage;
 use App\Domain\Procurement\Enums\PurchaseRequestStatus;
+use App\Domain\Procurement\Rules\PurchaseRequestReviewSla;
 use App\Models\ApprovalReminder;
 use App\Models\PurchaseRequest;
 use Carbon\CarbonInterface;
@@ -15,8 +16,12 @@ use Illuminate\Database\Eloquent\Collection;
 
 final class OverduePurchaseRequestReviewsQuery
 {
+    public function __construct(
+        private readonly PurchaseRequestReviewSla $reviewSla,
+    ) {}
+
     /**
-     * @param  Closure(int): void  $callback
+     * @param  Closure(int, ApprovalStage): void  $callback
      */
     public function eachDueAt(
         CarbonInterface $asOf,
@@ -26,7 +31,7 @@ final class OverduePurchaseRequestReviewsQuery
         $count = 0;
 
         PurchaseRequest::query()
-            ->select('id')
+            ->select(['id', 'status'])
             ->whereIn('status', [
                 PurchaseRequestStatus::PendingManagerReview->value,
                 PurchaseRequestStatus::PendingProcurementReview->value,
@@ -90,7 +95,15 @@ final class OverduePurchaseRequestReviewsQuery
                     &$count,
                 ): void {
                     foreach ($purchaseRequests as $purchaseRequest) {
-                        $callback($purchaseRequest->id);
+                        $stage = $this->reviewSla->stageFor(
+                            $purchaseRequest->status,
+                        );
+
+                        if ($stage === null) {
+                            continue;
+                        }
+
+                        $callback($purchaseRequest->id, $stage);
                         $count++;
                     }
                 },

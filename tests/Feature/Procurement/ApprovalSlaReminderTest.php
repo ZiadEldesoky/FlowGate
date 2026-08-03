@@ -113,6 +113,7 @@ it('dispatches jobs only for currently overdue reviews', function (): void {
         SendOverdueApprovalReminder::class,
         fn (SendOverdueApprovalReminder $job): bool => $job->purchaseRequestId
             === $overdue->id
+            && $job->stage === ApprovalStage::ManagerReview
             && $job->reminderOn === '2026-08-03',
     );
     Bus::assertNotDispatched(
@@ -146,6 +147,7 @@ it('atomically sends one manager reminder per request stage and day', function (
     ]);
     $job = new SendOverdueApprovalReminder(
         $purchaseRequest->id,
+        ApprovalStage::ManagerReview,
         '2026-08-03',
     );
 
@@ -190,6 +192,7 @@ it('notifies procurement reviewers and serializes the overdue inbox contract', f
 
     (new SendOverdueApprovalReminder(
         $purchaseRequest->id,
+        ApprovalStage::ProcurementReview,
         '2026-08-03',
     ))->handle(
         app(PurchaseRequestReviewSla::class),
@@ -259,23 +262,28 @@ it('exposes server-owned SLA facts in the review queue and request details', fun
             ->where('purchaseRequest.isOverdue', true));
 });
 
-it('does not send a queued reminder after the request leaves review', function (): void {
+it('ignores a queued reminder after the expected review stage changes', function (): void {
     Carbon::setTestNow('2026-08-03 12:00:00');
 
+    $procurement = User::factory()->create([
+        'role' => UserRole::Procurement,
+    ]);
     $purchaseRequest = PurchaseRequest::factory()->create([
-        'status' => PurchaseRequestStatus::Approved,
-        'review_due_at' => null,
+        'status' => PurchaseRequestStatus::PendingProcurementReview,
+        'review_due_at' => now()->subHour(),
     ]);
 
     (new SendOverdueApprovalReminder(
         $purchaseRequest->id,
+        ApprovalStage::ManagerReview,
         '2026-08-03',
     ))->handle(
         app(PurchaseRequestReviewSla::class),
         app(PurchaseRequestNotificationRecipientsQuery::class),
     );
 
-    expect(ApprovalReminder::query()->count())->toBe(0);
+    expect(ApprovalReminder::query()->count())->toBe(0)
+        ->and($procurement->notifications()->count())->toBe(0);
 });
 
 it('seeds an overdue review demo idempotently', function (): void {
