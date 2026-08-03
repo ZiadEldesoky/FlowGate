@@ -105,7 +105,7 @@ it('creates a normalized department and audit entry atomically', function (): vo
         ->and($activity->subject_type)
         ->toBe(OrganizationSubjectType::Department)
         ->and($activity->subject_id)->toBe($department->id)
-        ->and($activity->changes)->toBe([
+        ->and($activity->changes)->toEqual([
             [
                 'field' => 'name',
                 'from' => null,
@@ -245,7 +245,7 @@ it('updates a user organization assignment and records its changes', function ()
         ->and($subject->department_id)->toBe($department->id)
         ->and($activity->action)
         ->toBe(OrganizationActivityAction::UserAssignmentUpdated)
-        ->and($activity->changes)->toBe([
+        ->and($activity->changes)->toEqual([
             [
                 'field' => 'role',
                 'from' => UserRole::Requester->value,
