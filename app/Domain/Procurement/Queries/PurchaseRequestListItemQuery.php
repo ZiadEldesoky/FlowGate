@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace App\Domain\Procurement\Queries;
 
+use App\Domain\Procurement\Rules\PurchaseRequestReviewSla;
 use App\Models\PurchaseRequest;
 
-final class PurchaseRequestListItemQuery
+final readonly class PurchaseRequestListItemQuery
 {
+    public function __construct(
+        private PurchaseRequestReviewSla $reviewSla,
+    ) {}
+
     /**
      * @return array{
      *     id: int,
@@ -20,6 +25,8 @@ final class PurchaseRequestListItemQuery
      *     totalAmount: string,
      *     neededBy: string|null,
      *     submittedAt: string|null,
+     *     reviewDueAt: string|null,
+     *     isOverdue: bool,
      *     createdAt: string
      * }
      */
@@ -43,6 +50,11 @@ final class PurchaseRequestListItemQuery
             'totalAmount' => $purchaseRequest->total_amount,
             'neededBy' => $purchaseRequest->needed_by?->toDateString(),
             'submittedAt' => $purchaseRequest->submitted_at?->toAtomString(),
+            'reviewDueAt' => $purchaseRequest->review_due_at?->toAtomString(),
+            'isOverdue' => $this->reviewSla->isOverdue(
+                $purchaseRequest->review_due_at,
+                now(),
+            ),
             'createdAt' => $purchaseRequest->created_at?->toAtomString() ?? '',
         ];
     }

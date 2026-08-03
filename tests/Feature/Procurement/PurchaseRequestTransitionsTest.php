@@ -53,6 +53,7 @@ it('persists the full approval path atomically', function (): void {
 
     expect($purchaseRequest->status)->toBe(PurchaseRequestStatus::Completed)
         ->and($purchaseRequest->submitted_at)->not->toBeNull()
+        ->and($purchaseRequest->review_due_at)->toBeNull()
         ->and($purchaseRequest->completed_at)->not->toBeNull()
         ->and($purchaseRequest->approvals)->toHaveCount(2)
         ->and($purchaseRequest->approvals[0]->stage)->toBe(ApprovalStage::ManagerReview)

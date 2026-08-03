@@ -17,10 +17,13 @@ final class UserNotificationsIndexQuery
      *             purchaseRequestId: int,
      *             reference: string,
      *             title: string,
-     *             actorName: string,
-     *             action: string,
-     *             fromStatus: string,
-     *             toStatus: string,
+     *             kind: string,
+     *             actorName?: string,
+     *             action?: string,
+     *             fromStatus?: string,
+     *             toStatus?: string,
+     *             stage?: string,
+     *             reviewDueAt?: string,
      *             readAt: string|null,
      *             createdAt: string
      *         }>,
@@ -73,10 +76,13 @@ final class UserNotificationsIndexQuery
      *     purchaseRequestId: int,
      *     reference: string,
      *     title: string,
-     *     actorName: string,
-     *     action: string,
-     *     fromStatus: string,
-     *     toStatus: string,
+     *     kind: string,
+     *     actorName?: string,
+     *     action?: string,
+     *     fromStatus?: string,
+     *     toStatus?: string,
+     *     stage?: string,
+     *     reviewDueAt?: string,
      *     readAt: string|null,
      *     createdAt: string
      * }
@@ -84,18 +90,34 @@ final class UserNotificationsIndexQuery
     private function serialize(DatabaseNotification $notification): array
     {
         $data = $notification->data;
-
-        return [
+        $common = [
             'id' => (string) $notification->id,
             'purchaseRequestId' => (int) ($data['purchaseRequestId'] ?? 0),
             'reference' => (string) ($data['reference'] ?? ''),
             'title' => (string) ($data['title'] ?? ''),
+            'readAt' => $notification->read_at?->toAtomString(),
+            'createdAt' => $notification->created_at?->toAtomString() ?? '',
+        ];
+
+        if (
+            ($data['kind'] ?? null)
+            === 'purchase_request_review_overdue'
+        ) {
+            return [
+                ...$common,
+                'kind' => 'purchase_request_review_overdue',
+                'stage' => (string) ($data['stage'] ?? ''),
+                'reviewDueAt' => (string) ($data['reviewDueAt'] ?? ''),
+            ];
+        }
+
+        return [
+            ...$common,
+            'kind' => 'purchase_request_transition',
             'actorName' => (string) ($data['actorName'] ?? ''),
             'action' => (string) ($data['action'] ?? ''),
             'fromStatus' => (string) ($data['fromStatus'] ?? ''),
             'toStatus' => (string) ($data['toStatus'] ?? ''),
-            'readAt' => $notification->read_at?->toAtomString(),
-            'createdAt' => $notification->created_at?->toAtomString() ?? '',
         ];
     }
 }

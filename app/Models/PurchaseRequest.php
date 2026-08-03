@@ -26,6 +26,7 @@ use Illuminate\Support\Collection;
  * @property string $currency
  * @property string $total_amount
  * @property CarbonInterface|null $submitted_at
+ * @property CarbonInterface|null $review_due_at
  * @property CarbonInterface|null $rejected_at
  * @property CarbonInterface|null $completed_at
  * @property CarbonInterface|null $cancelled_at
@@ -35,6 +36,7 @@ use Illuminate\Support\Collection;
  * @property-read User $requester
  * @property-read Collection<int, PurchaseRequestItem> $items
  * @property-read Collection<int, Approval> $approvals
+ * @property-read Collection<int, ApprovalReminder> $approvalReminders
  * @property-read Collection<int, ActivityLog> $activityLogs
  */
 #[Fillable([
@@ -84,6 +86,14 @@ final class PurchaseRequest extends Model
     }
 
     /**
+     * @return HasMany<ApprovalReminder, $this>
+     */
+    public function approvalReminders(): HasMany
+    {
+        return $this->hasMany(ApprovalReminder::class);
+    }
+
+    /**
      * @return HasMany<ActivityLog, $this>
      */
     public function activityLogs(): HasMany
@@ -101,6 +111,7 @@ final class PurchaseRequest extends Model
             'status' => PurchaseRequestStatus::class,
             'total_amount' => 'decimal:2',
             'submitted_at' => 'immutable_datetime',
+            'review_due_at' => 'immutable_datetime',
             'rejected_at' => 'immutable_datetime',
             'completed_at' => 'immutable_datetime',
             'cancelled_at' => 'immutable_datetime',

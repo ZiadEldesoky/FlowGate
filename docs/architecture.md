@@ -106,7 +106,7 @@ sequenceDiagram
     A->>W: resolve next state
     W-->>A: next status or domain exception
     A->>D: insert approval when required
-    A->>D: update status and transition timestamp
+    A->>D: update status, timestamps, and review deadline
     A->>D: insert activity log
     A->>E: dispatch after-commit event
     A->>D: commit
@@ -139,6 +139,7 @@ the queue never grants permission to decide a request.
 
 - Foreign keys define ownership and deletion behavior.
 - A request can have at most one approval per review stage.
+- A request can have at most one processed reminder per review stage and day.
 - Request references and department codes are unique.
 - Money uses fixed-precision `DECIMAL` columns.
 - Request-list access paths are indexed by status, department, requester, and
@@ -235,6 +236,38 @@ The notification inbox is a read model composed by
 `MarkAllNotificationsAsRead` are explicit Organization Actions. The shared
 unread count is a navigation hint only and never grants access to a
 notification.
+
+## Approval SLA and queued reminders
+
+`PurchaseRequestReviewSla` maps only pending review statuses to their configured
+deadlines. `TransitionPurchaseRequest` writes the next deadline inside the same
+transaction as the status, approval, activity log, and transition timestamp.
+Moving to procurement review replaces the manager deadline; leaving review
+clears it.
+
+The UI receives `reviewDueAt` and `isOverdue` from Query Objects. These fields
+are presentation facts, not authorization signals, and React does not infer
+overdue state from its own clock.
+
+Laravel's scheduler runs
+`procurement:dispatch-overdue-review-reminders` hourly. The command delegates
+the indexed search to `OverduePurchaseRequestReviewsQuery` and dispatches one
+small queued job per result. `SendOverdueApprovalReminder` then:
+
+1. locks and reloads the purchase request;
+2. rechecks its current stage and deadline;
+3. resolves the current designated reviewers;
+4. writes database notifications and the processed reminder atomically.
+
+The unique request, stage, and reminder-date constraint makes repeated schedule
+runs and queue retries idempotent. A request that changes state after dispatch
+is ignored by the worker. Remaining overdue requests may produce one new
+reminder on a later calendar day.
+
+This job deliberately owns only database-backed notification delivery. It does
+not move the workflow, authorize a user action, or call an external service.
+Queue and scheduler process requirements are documented in
+[`docs/operations.md`](operations.md).
 
 ## Organization administration boundary
 

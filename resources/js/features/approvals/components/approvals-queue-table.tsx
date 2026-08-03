@@ -10,11 +10,12 @@ import {
 } from '@/components/ui/table';
 import type { ApprovalsCopy } from '@/features/approvals/i18n';
 import {
+    ReviewSla,
     formatDate,
     formatDateTime,
     formatMoney,
+    purchaseRequestRoutes,
 } from '@/features/purchase-requests';
-import { purchaseRequestRoutes } from '@/features/purchase-requests';
 import type { ApprovalQueueItem } from '@/types/approvals';
 import type { AppLocale } from '@/types/locale';
 
@@ -40,6 +41,7 @@ export function ApprovalsQueueTable({
                     <TableHead>{labels.status}</TableHead>
                     <TableHead className="text-end">{labels.amount}</TableHead>
                     <TableHead>{labels.neededBy}</TableHead>
+                    <TableHead>{labels.reviewDueAt}</TableHead>
                     <TableHead>{labels.submittedAt}</TableHead>
                 </TableRow>
             </TableHeader>
@@ -80,6 +82,19 @@ export function ApprovalsQueueTable({
                         <TableCell className="text-muted-foreground">
                             {formatDate(row.neededBy, locale) ??
                                 labels.notAvailable}
+                        </TableCell>
+                        <TableCell>
+                            <ReviewSla
+                                reviewDueAt={row.reviewDueAt}
+                                isOverdue={row.isOverdue}
+                                locale={locale}
+                                labels={{
+                                    reviewDueAt: labels.reviewDueAt,
+                                    overdue: labels.overdue,
+                                    due: labels.due,
+                                    notAvailable: labels.notAvailable,
+                                }}
+                            />
                         </TableCell>
                         <TableCell className="text-muted-foreground">
                             {formatDateTime(row.submittedAt, locale) ??

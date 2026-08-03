@@ -21,6 +21,8 @@ export type ApprovalQueueItem = {
     totalAmount: string;
     neededBy: string | null;
     submittedAt: string | null;
+    reviewDueAt: string | null;
+    isOverdue: boolean;
 };
 
 export type ApprovalQueuePaginationMeta = {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Procurement\Queries;
 
 use App\Domain\Organization\Enums\UserRole;
+use App\Domain\Procurement\Enums\ApprovalStage;
 use App\Domain\Procurement\Enums\PurchaseRequestAction;
 use App\Domain\Procurement\Enums\PurchaseRequestStatus;
 use App\Models\PurchaseRequest;
@@ -14,6 +15,24 @@ use Illuminate\Database\Eloquent\Collection;
 
 final class PurchaseRequestNotificationRecipientsQuery
 {
+    /**
+     * @return Collection<int, User>
+     */
+    public function reviewersForStage(
+        PurchaseRequest $purchaseRequest,
+        ApprovalStage $stage,
+    ): Collection {
+        $query = match ($stage) {
+            ApprovalStage::ManagerReview => $this->managerQuery(
+                $purchaseRequest,
+            ),
+            ApprovalStage::ProcurementReview => $this
+                ->procurementReviewersQuery(),
+        };
+
+        return $query?->orderBy('id')->get() ?? new Collection;
+    }
+
     /**
      * @return Collection<int, User>
      */

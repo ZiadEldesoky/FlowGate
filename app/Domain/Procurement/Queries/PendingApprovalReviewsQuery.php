@@ -6,6 +6,7 @@ namespace App\Domain\Procurement\Queries;
 
 use App\Domain\Procurement\Enums\ApprovalStage;
 use App\Domain\Procurement\Enums\PurchaseRequestStatus;
+use App\Domain\Procurement\Rules\PurchaseRequestReviewSla;
 use App\Models\PurchaseRequest;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -16,6 +17,7 @@ final readonly class PendingApprovalReviewsQuery
 {
     public function __construct(
         private Gate $gate,
+        private PurchaseRequestReviewSla $reviewSla,
     ) {}
 
     /**
@@ -32,7 +34,9 @@ final readonly class PendingApprovalReviewsQuery
      *             currency: string,
      *             totalAmount: string,
      *             neededBy: string|null,
-     *             submittedAt: string|null
+     *             submittedAt: string|null,
+     *             reviewDueAt: string|null,
+     *             isOverdue: bool
      *         }>,
      *         meta: array{
      *             currentPage: int,
@@ -103,6 +107,11 @@ final readonly class PendingApprovalReviewsQuery
                 'totalAmount' => $purchaseRequest->total_amount,
                 'neededBy' => $purchaseRequest->needed_by?->toDateString(),
                 'submittedAt' => $purchaseRequest->submitted_at?->toAtomString(),
+                'reviewDueAt' => $purchaseRequest->review_due_at?->toAtomString(),
+                'isOverdue' => $this->reviewSla->isOverdue(
+                    $purchaseRequest->review_due_at,
+                    now(),
+                ),
             ];
         }
 

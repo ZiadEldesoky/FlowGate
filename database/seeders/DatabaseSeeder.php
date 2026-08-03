@@ -95,7 +95,15 @@ final class DatabaseSeeder extends Seeder
         );
 
         if ($pendingManager->status === PurchaseRequestStatus::Draft) {
-            $submit->handle($pendingManager, $requester);
+            $pendingManager = $submit->handle($pendingManager, $requester);
+        }
+
+        if (
+            $pendingManager->status
+            === PurchaseRequestStatus::PendingManagerReview
+        ) {
+            $pendingManager->review_due_at = now()->subHours(2);
+            $pendingManager->save();
         }
 
         $pendingProcurement = $this->purchaseRequest(

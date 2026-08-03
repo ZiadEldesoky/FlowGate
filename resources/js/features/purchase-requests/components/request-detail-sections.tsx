@@ -7,6 +7,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import { ReviewSla } from '@/features/purchase-requests/components/review-sla';
 import type { PurchaseRequestCopy } from '@/features/purchase-requests/i18n';
 import {
     getPurchaseRequestActionLabel,
@@ -116,6 +117,22 @@ export function RequestSummarySection({
                         labels.notAvailable}
                 </p>
             </div>
+            {purchaseRequest.reviewDueAt ? (
+                <div className="space-y-1">
+                    <ReviewSla
+                        reviewDueAt={purchaseRequest.reviewDueAt}
+                        isOverdue={purchaseRequest.isOverdue}
+                        locale={locale}
+                        labels={{
+                            reviewDueAt: labels.reviewDueAt,
+                            overdue: labels.overdue,
+                            due: labels.due,
+                            notAvailable: labels.notAvailable,
+                        }}
+                        showLabel
+                    />
+                </div>
+            ) : null}
         </section>
     );
 }

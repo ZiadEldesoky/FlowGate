@@ -1,5 +1,9 @@
+import { formatDateTime } from '@/features/purchase-requests/utils';
 import type { AppLocale } from '@/types/locale';
-import type { UserNotification } from '@/types/notifications';
+import type {
+    ApprovalReviewStage,
+    UserNotification,
+} from '@/types/notifications';
 
 export const notificationCopy = {
     ar: {
@@ -25,6 +29,8 @@ export const notificationCopy = {
         showing: 'عرض {from}–{to} من {total}',
         noResultsRange: 'لا توجد نتائج',
         processing: 'جارٍ المعالجة…',
+        stageManager: 'مراجعة المدير',
+        stageProcurement: 'مراجعة المشتريات',
         message: {
             submit: 'أرسل {actor} الطلب {reference} لمراجعة المدير.',
             approveManager: 'اعتمد {actor} مراجعة المدير للطلب {reference}.',
@@ -34,6 +40,7 @@ export const notificationCopy = {
             complete: 'أكمل {actor} الطلب {reference}.',
             cancel: 'ألغى {actor} الطلب {reference}.',
             fallback: 'تم تحديث الطلب {reference} بواسطة {actor}.',
+            reviewOverdue: 'تأخرت {stage} للطلب {reference}. الموعد كان {due}.',
         },
     },
     en: {
@@ -61,6 +68,8 @@ export const notificationCopy = {
         showing: 'Showing {from}–{to} of {total}',
         noResultsRange: 'No results',
         processing: 'Processing…',
+        stageManager: 'Manager review',
+        stageProcurement: 'Procurement review',
         message: {
             submit: '{actor} submitted {reference} for manager review.',
             approveManager: '{actor} approved manager review for {reference}.',
@@ -70,6 +79,7 @@ export const notificationCopy = {
             complete: '{actor} completed {reference}.',
             cancel: '{actor} cancelled {reference}.',
             fallback: '{reference} was updated by {actor}.',
+            reviewOverdue: '{stage} for {reference} is overdue. Due {due}.',
         },
     },
 } as const;
@@ -92,11 +102,28 @@ export function formatNotificationCopy(
     }, template);
 }
 
+function stageLabel(stage: ApprovalReviewStage, locale: AppLocale): string {
+    const t = getNotificationCopy(locale);
+
+    return stage === 'manager_review' ? t.stageManager : t.stageProcurement;
+}
+
 export function getNotificationMessage(
     notification: UserNotification,
     locale: AppLocale,
 ): string {
     const t = getNotificationCopy(locale);
+
+    if (notification.kind === 'purchase_request_review_overdue') {
+        return formatNotificationCopy(t.message.reviewOverdue, {
+            stage: stageLabel(notification.stage, locale),
+            reference: notification.reference,
+            due:
+                formatDateTime(notification.reviewDueAt, locale) ??
+                notification.reviewDueAt,
+        });
+    }
+
     const template = (() => {
         switch (notification.action) {
             case 'submit':
