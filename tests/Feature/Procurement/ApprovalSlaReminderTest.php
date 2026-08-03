@@ -16,6 +16,7 @@ use App\Models\Department;
 use App\Models\PurchaseRequest;
 use App\Models\User;
 use App\Notifications\PurchaseRequestReviewOverdueNotification;
+use Database\Seeders\DatabaseSeeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Event;
@@ -260,4 +261,19 @@ it('does not send a queued reminder after the request leaves review', function (
     );
 
     expect(ApprovalReminder::query()->count())->toBe(0);
+});
+
+it('seeds an overdue review demo idempotently', function (): void {
+    Carbon::setTestNow('2026-08-03 12:00:00');
+
+    $this->seed(DatabaseSeeder::class);
+    $this->seed(DatabaseSeeder::class);
+
+    $pendingManager = PurchaseRequest::query()
+        ->where('status', PurchaseRequestStatus::PendingManagerReview)
+        ->sole();
+
+    expect(PurchaseRequest::query()->count())->toBe(4)
+        ->and($pendingManager->review_due_at?->toDateTimeString())
+        ->toBe('2026-08-03 10:00:00');
 });

@@ -16,6 +16,8 @@ workflow rules on the server and records every state change atomically.
 - Manager approval, procurement approval, and reason-required rejection flows.
 - Requester cancellation and procurement-owned completion flows.
 - After-commit, role-aware database notifications with a user-scoped inbox.
+- Stage-specific approval deadlines persisted with workflow transitions.
+- Hourly scheduled discovery and idempotent queued overdue reminders.
 - Administrator-only department, manager, role, and membership management.
 - Atomic organization audit entries for every administrative assignment change.
 - Role-aware operational dashboards with server-owned workflow metrics.
@@ -41,6 +43,9 @@ flowchart LR
     OrganizationAction --> DB
     DB --> Event["After-commit Domain Event"]
     Event --> Listener["Listener / Notification / Job"]
+    Scheduler["Laravel Scheduler"] --> DueQuery["Overdue Review Query"]
+    DueQuery --> ReminderJob["Queued Reminder Job"]
+    ReminderJob --> DB
 
     Query["Query Object"] --> DB
     Controller --> Query
@@ -61,6 +66,7 @@ erDiagram
     USERS ||--o{ PURCHASE_REQUESTS : submits
     PURCHASE_REQUESTS ||--|{ PURCHASE_REQUEST_ITEMS : contains
     PURCHASE_REQUESTS ||--o{ APPROVALS : receives
+    PURCHASE_REQUESTS ||--o{ APPROVAL_REMINDERS : schedules
     USERS ||--o{ APPROVALS : decides
     PURCHASE_REQUESTS ||--o{ ACTIVITY_LOGS : records
     USERS o|--o{ ACTIVITY_LOGS : performs
@@ -87,6 +93,7 @@ erDiagram
         enum status
         char currency
         decimal total_amount
+        timestamp review_due_at
     }
     PURCHASE_REQUEST_ITEMS {
         bigint id PK
@@ -101,6 +108,13 @@ erDiagram
         bigint actor_id FK
         enum stage
         enum decision
+    }
+    APPROVAL_REMINDERS {
+        bigint id PK
+        bigint purchase_request_id FK
+        enum stage
+        date reminder_on
+        timestamp processed_at
     }
     ACTIVITY_LOGS {
         bigint id PK
@@ -130,9 +144,10 @@ erDiagram
 ```
 
 Money is stored as `DECIMAL`; foreign keys, unique constraints, and workflow
-indexes are defined in migrations. Organization activity entries retain a
-human-readable subject snapshot and the exact changed fields without storing
-credentials or other secrets.
+indexes are defined in migrations. A unique request, stage, and reminder-date
+constraint makes scheduled reminders safe to retry. Organization activity
+entries retain a human-readable subject snapshot and the exact changed fields
+without storing credentials or other secrets.
 
 ## Local setup
 
@@ -144,12 +159,14 @@ composer dev
 ```
 
 The default local database is SQLite. Copy `.env.example` to `.env` if the setup
-script has not already done so.
+script has not already done so. `composer dev` runs the HTTP server, queue,
+scheduler, logs, and Vite so approval reminders work locally.
 
 ### Demo accounts
 
 Run `php artisan db:seed` to create an idempotent demo organization and purchase
-requests. Every demo account uses the password `password`.
+requests, including an overdue manager review that demonstrates the SLA queue.
+Every demo account uses the password `password`.
 
 | Role | Email |
 | --- | --- |
@@ -170,11 +187,14 @@ npm run build
 ```
 
 The same checks run in GitHub Actions for pull requests and pushes to `main`.
+A second job migrates and runs the Pest suite against MySQL 8.4 to catch
+database-specific behavior before release.
 
 ## Documentation
 
 - [Architecture and state transitions](docs/architecture.md)
 - [Design system](docs/design-system.md)
+- [Queue, scheduler, health, and deployment operations](docs/operations.md)
 
 ## License
 
